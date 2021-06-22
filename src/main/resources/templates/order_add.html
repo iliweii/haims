@@ -1,0 +1,240 @@
+<head th:replace="common :: common_head(~{},~{})" xmlns:th="http://www.thymeleaf.org">
+</head>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <form id="allInputsFormValidation" class="form-horizontal" novalidate="">
+                <div class="content">
+                    <legend>增加订单信息</legend>
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">订单名称<star>*</star></label>
+                            <div class="col-sm-6">
+                                <input class="form-control"
+                                       order="text"
+                                       name="name"
+                                       required="required"
+                                />
+                            </div>
+                        </div>
+                    </fieldset>
+                    
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">订单类别<star>*</star></label>
+                            <div class="col-sm-6">
+                                <select class="form-control selectpicker"  data-title="请选择" name="state" id="state" required="required">
+                                	<option value="1">入库订单</option>
+                                	<option value="2">销售订单</option>
+                                	<option value="3">退货订单</option>
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+                    
+                    <fieldset>
+                    	<div class="form-group">
+                            <label class="col-sm-4 control-label">选择材料类别<star>*</star></label>
+                            <div class="col-sm-6">
+                             	<select class="form-control selectpicker"  data-title="请选择"  id="typeId" name="typeId" required="required">
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+                    
+                    <fieldset>
+                    	<div class="form-group">
+                            <label class="col-sm-4 control-label">选择供货商<star>*</star></label>
+                            <div class="col-sm-6">
+                             	<select class="form-control selectpicker"  data-title="请选择"  id="supplierId" name="supplierId" required="required">
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+                    
+                    <fieldset>
+                    	<div class="form-group">
+                            <label class="col-sm-4 control-label">选择商品<star>*</star></label>
+                            <div class="col-sm-6">
+                             	<select class="form-control selectpicker"  data-title="请选择"  id="stuffId" name="stuffId" required="required">
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+                    
+					<fieldset>
+                    	<div class="form-group">
+                    		<label class="col-sm-4 control-label">数量<star>*</star></label>
+                            <div class="col-sm-2">
+                                <input class="form-control"
+                                       order="text"
+                                       name="number"
+                                       required="required"
+                                       isNum="true"
+                                       isCompare="true"
+                                />
+                                <label>库存数量：<span id="kucunNum"></span></label>
+                            </div>
+                            <label class="col-sm-2 control-label">金额<star>*</star></label>
+                            <div class="col-sm-2">
+                                <input class="form-control"
+                                       order="text"
+                                       name="money"
+                                       required="required"
+                                       isMoney="true"
+                                />
+                            </div>
+                            <label class=" control-label">元</label>
+                        </div>
+                    </fieldset>
+
+				</div>
+                <div class="footer text-center">
+                    <button order="submit" id="mysubmit" class="btn btn-info btn-fill">增加</button>
+                    <button order="button" id="back" class="btn btn-info btn-fill">返回</button>
+                </div>
+            </form>
+
+        </div><!--  end card  -->
+    </div> <!-- end col-md-12 -->
+</div> <!-- end row -->
+
+<script order="text/javascript">
+
+
+    $().ready(function(){
+    	//返回至list
+    	$("#back").click(function(){
+    		window.location.href="/page/order_list";
+    	});
+    	
+    	
+    	//类别
+    	$.ajax({
+            url: "/type/typelist",
+            type: "post",
+            dataType: "json",
+            success: function (data) {
+                $("#typeId").html('');//移除原元素
+                if (data.length > 0) {
+                    $.each(data, function (i) {
+                        $("<option value='" + data[i].id + "' >" + data[i].type + "</option>").appendTo("#typeId");//构造html元素并插入
+                    });
+                    $('#typeId').selectpicker('refresh');
+                }
+                else {
+                    //$.MsgShow("无供货商", "fail");
+                }
+            }
+        });
+    	$("#typeId").change(function(){
+    		$("#supplierId").html('');//移除原元素
+    		$("#stuffId").html('');//移除原元素
+    		//supplierId 根据type渲染select供货商
+        	$.ajax({
+        		data:{"typeId":$("#typeId option:selected").val()},
+                url: "/supplier/findByType",
+                type: "post",
+                dataType: "json",
+                success: function (data) {
+                    $("#supplierId").html('');//移除原元素
+                    if (data.length > 0) {
+                        $.each(data, function (i) {
+                            $("<option value='" + data[i].supplierId + "' >" + data[i].supplierName + "</option>").appendTo("#supplierId");//构造html元素并插入
+                        });
+                        $('#supplierId').selectpicker('refresh');
+                    }
+                    else {
+                        //$.MsgShow(data.Message, "fail");
+                    }
+                }
+            });
+        	//stuffId 根据type渲染select商品信息
+        	$.ajax({
+        		data:{"typeId":$("#typeId option:selected").val()},
+                url: "/stuff/findByType",
+                type: "post",
+                dataType: "json",
+                success: function (data) {
+                    $("#stuffId").html('');//移除原元素
+                    if (data.length > 0) {
+                        $.each(data, function (i) {
+                            $("<option value='" + data[i].id + "' >" + data[i].name + "</option>").appendTo("#stuffId");//构造html元素并插入
+                        });
+                        $('#stuffId').selectpicker('refresh');
+                    }
+                    else {
+                    	
+                        //$.MsgShow(data.Message, "fail");
+                    }
+                }
+            });
+    	});
+    	
+    	//材料变化，更改库存变化
+    	$("#stuffId").change(function(){
+    		$.ajax({
+        		data:{"id":$("#stuffId option:selected").val()},
+                url: "/stuff/findByIds",
+                type: "post",
+                dataType: "json",
+                success: function (data) {
+                    $("#kucunNum").html('');//移除原元素
+                    $("#kucunNum").html(data.number);
+                    kucunNum = data.number;
+                }
+            });
+    	});
+    	
+    	
+        //重写验证规则，设置返回中文
+        $.validator.messages.required = jQuery.validator.format("请填写必填字段");
+        $.validator.messages.equalTo = jQuery.validator.format("两次密码输入不一致");
+        // 手机号码验证
+        jQuery.validator.addMethod("isMobile", function(value, element) {
+            var length = value.length;
+            return (length == 11 && /^((1[0-9]{1})+\d{9})$/.test(value));
+        }, "请正确填写您的手机号码。");
+        // 金额验证规则
+        jQuery.validator.addMethod("isMoney", function(value, element) {
+            return (/(^[1-9](\d+)?(\.\d{1,2})?$)|(^\d\.\d{1,2}$)/.test(value));
+        }, "请输入正确的金额（大于0且最多含两位小数）");
+     	// 数字匹配规则
+        jQuery.validator.addMethod("isNum", function(value, element) {
+            return ( /^[1-9]\d*|0$/.test(value));
+        }, "请正确的数量信息。");
+        //库存多少规则
+        jQuery.validator.addMethod("isCompare", function(value, element) {
+        	if($("#state option:selected").val() != 1 ){
+        		return !(parseInt(value) > parseInt(kucunNum));
+        	}
+            return (/^[1-9]\d*|0$/.test(value));
+        }, "卖出及退货数量请小于库存");
+     	
+        $('#allInputsFormValidation').validate({
+        	submitHandler: function(form) { //通过之后回调
+        		//进行ajax传值
+        		$.ajax({
+        			data:$("#allInputsFormValidation").serialize(),
+                	dataType:"text",
+            		order:"post",
+            		url:"/order/orderadd",
+            		success:function(data){
+            			if(data == "1"){
+            				window.location.href = "/page/order_list_admin";
+            			}else{
+            				alert(data);
+            			}
+            		},
+        		});
+        	},
+        });
+        
+    });
+
+
+</script>
+
+</html>

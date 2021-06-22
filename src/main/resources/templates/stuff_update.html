@@ -1,0 +1,189 @@
+<head th:replace="common :: common_head(~{},~{})" xmlns:th="http://www.thymeleaf.org">
+</head>
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<form id="allInputsFormValidation" class="form-horizontal" 
+				 method="post" novalidate="" enctype="multipart/form-data" >
+				<div class="content">
+					<legend>修改材料信息</legend>
+					<input type="hidden" name="id" value="${stuff.id }" />
+					<input type="hidden" name="state" value="${stuff.state }" />
+					<fieldset>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">材料图片<star>*</star></label>
+                            <div class="col-sm-6">
+                            	<img style="width:100px;height:100px" id="preview" alt="" src="${stuff.url }">
+                                <input type="file"
+                                       name="file"
+                                       id="fileField"
+                                       style="display: none;"
+                                       onchange="previews(this)";
+                                />
+                                <br>
+                                <button type="button" onclick="changeClick()" class="btn btn-wd">更换图片</button>
+                            </div>
+                        </div>
+                    </fieldset>
+					<fieldset>
+                    	<div class="form-group">
+                            <label class="col-sm-4 control-label">选择材料类别<star>*</star></label>
+                            <div class="col-sm-6">
+                             	<select class="form-control" id="typeId" name="typeId" required="required" class="selectpicker">
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">材料名称<star>*</star></label>
+                            <div class="col-sm-6">
+                                <input class="form-control"
+                                       type="text"
+                                       name="name"
+                                       required="required"
+                                       value="${stuff.name }"
+                                />
+                            </div>
+                        </div>
+                    </fieldset>
+
+					<fieldset>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">材料库存<star>*</star></label>
+                            <div class="col-sm-6">
+                                <input class="form-control"
+                                       type="text"
+                                       name="number"
+                                       required="required"
+                                       readonly="readonly"
+                                       value="${stuff.number }"
+                                />
+                            </div>
+                        </div>
+                    </fieldset>
+					 <fieldset>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">库存是否充足<star>*</star></label>
+                            <div class="col-sm-6">
+                            	<label class="radio">
+                               		<input type="radio" data-toggle="radio" name="state" value="0" <c:if test="${stuff.state eq 0 }">checked=""</c:if>>充足
+                                </label>
+                                <label class="radio">
+                                	<input type="radio" data-toggle="radio" name="state" <c:if test="${stuff.state eq 1 }">checked=""</c:if> value="1">不充足
+                            	</label>
+                            </div>
+                        </div>
+                    </fieldset>
+
+
+				</div>
+				<div class="footer text-center">
+					<button type="submit" class="btn btn-info btn-fill">修改</button>
+					<button type="reset" class="btn btn-info btn-fill">重置</button>
+				</div>
+			</form>
+
+		</div>
+		<!--  end card  -->
+	</div>
+	<!-- end col-md-12 -->
+</div>
+<!-- end row -->
+
+
+
+<script type="text/javascript">
+function changeClick(){
+	$("#fileField").click();
+}
+
+ function previews(file){
+	if (file.files && file.files[0]){ 
+		var reader = new FileReader(); 
+		reader.onload = function(evt){ 
+			$("#preview").attr("src",evt.target.result);
+		};
+		reader.readAsDataURL(file.files[0]); 
+	}else{
+		$("#preview").html('<div style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src=\'' + file.value + '\'"></div>'); 
+	}
+}
+
+$().ready(function(){
+	
+	//渲染select,查询角色信息
+	$.ajax({
+        url: "/type/typelist",
+        type: "post",
+        dataType: "json",
+        success: function (data) {
+            $("#typeId").html('');//移除原元素
+            if (data.length > 0) {
+            	//绑定select元素值
+                $.each(data, function (i) {
+                	if('${stuff.typeId }' == data[i].id){
+                		$("<option value='" + data[i].id + "' selected='selected' >" + data[i].type + "</option>").appendTo("#typeId");//构造html元素并插入
+                	}else{
+                		$("<option value='" + data[i].id + "' >" + data[i].type + "</option>").appendTo("#typeId");//构造html元素并插入
+                	}
+                	
+                });
+                $('#typeId').selectpicker('refresh');
+            }
+            else {
+                $.MsgShow(data.Message, "fail");
+            }
+        },
+        error:function(){
+        	alert("通信错误");
+        }
+    });
+	
+	
+	
+    //重写验证规则，设置返回中文
+    $.validator.messages.required = jQuery.validator.format("请填写必填字段");
+    $.validator.messages.equalTo = jQuery.validator.format("两次密码输入不一致");
+    // 手机号码验证
+    jQuery.validator.addMethod("isMobile", function(value, element) {
+        var length = value.length;
+        return (length == 11 && /^((1[0-9]{1})+\d{9})$/.test(value));
+    }, "请正确填写您的手机号码。");
+    
+	
+    $('#allInputsFormValidation').validate({
+    	submitHandler: function(form) { //通过之后回调
+    		//进行ajax传值
+    		var formdata = new FormData($("#allInputsFormValidation")[0]);
+    		//进行ajax传值
+    		$.ajax({
+    			data:formdata,
+            	dataType:"text",
+        		type:"post",
+        		url:"/stuff/stuffupdate",
+        		cache: false,
+                processData: false,
+                contentType: false,
+                async: false,
+        		success:function(data){
+        			if(data == "1"){
+        				window.location.href = "/page/stuff_list";
+        			}else{
+        				alert(data);
+        			}
+        		},
+    		});
+    	},
+    });
+	
+    
+});
+
+
+
+</script>
+
+</html>

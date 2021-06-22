@@ -1,0 +1,37 @@
+server:
+  port: 8082 # 这里改为自己的端口号
+
+spring:
+  profiles:
+    active: dev
+  mvc:
+    static-path-pattern: /static/**
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    # 这里改成自己的数据库访问路径 （修改haims为自己数据库名）
+    url: jdbc:mysql://localhost:3306/haims?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=UTF-8
+    username: root # 这里改为自己的数据库用户名
+    password: root # 这里改为自己的数据库密码
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 600MB
+  thymeleaf:
+    prefix: classpath:/templates/
+    check-template-location: true
+    cache: false
+    suffix: .html
+    #encoding: UTF-8
+    #content-type: text/html
+    mode: HTML5
+logging:
+  level:
+    org.thymeleaf: info
+
+mybatis:
+  mapper-locations: classpath:mapper/*Mapper.xml
+  type-aliases-package: com.haims.pojo
+
+file:
+  path: "D:\\山东理工大学\\软件工程综合实训\\家电库存管理系统\\src\\main\\resources\\static\\image\\" #这里改为自己的项目路径

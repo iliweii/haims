@@ -1,0 +1,160 @@
+<head th:replace="common :: common_head(~{},~{})" xmlns:th="http://www.thymeleaf.org">
+</head>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <form id="allInputsFormValidation" class="form-horizontal" method="post" novalidate="" enctype="multipart/form-data">
+                <div class="content">
+                    <legend>增加供货商信息</legend>
+
+					<fieldset>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">材料图片<star>*</star></label>
+                            <div class="col-sm-6">
+                                <input class="form-control"
+                                       type="file"
+                                       name="file"
+                                       required="required"
+                                       id="fileField"
+                                />
+                            </div>
+                        </div>
+                    </fieldset>
+
+					<fieldset>
+                    	<div class="form-group">
+                            <label class="col-sm-4 control-label">选择材料类别<star>*</star></label>
+                            <div class="col-sm-6">
+                             	<select class="form-control selectpicker"  data-title="请选择"  id="typeId" name="typeId" required="required">
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">材料名称<star>*</star></label>
+                            <div class="col-sm-6">
+                                <input class="form-control"
+                                       type="text"
+                                       name="name"
+                                       required="required"
+                                />
+                            </div>
+                        </div>
+                    </fieldset>
+                   <fieldset>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">材料库存<star>*</star></label>
+                            <div class="col-sm-6">
+                                <input class="form-control"
+                                       type="text"
+                                       name="number"
+                                       required="required"
+                                       isNum="true"
+                                />
+                            </div>
+                        </div>
+                    </fieldset>
+                    
+					<fieldset>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">库存是否充足<star>*</star></label>
+                            <div class="col-sm-6">
+                            	<label class="radio">
+                               		<input type="radio" data-toggle="radio" name="state" value="0" checked="">充足
+                                </label>
+                                <label class="radio">
+                                	<input type="radio" data-toggle="radio" name="state" value="1">不充足
+                            	</label>
+                            </div>
+                        </div>
+                    </fieldset>
+       											
+
+                </div>
+                <div class="footer text-center">
+                    <button type="submit" id="mysubmit" class="btn btn-info btn-fill">增加</button>
+                    <button type="reset" class="btn btn-info btn-fill">重置</button>
+                    <button type="button" class="btn btn-info btn-fill">取消</button>
+                </div>
+            </form>
+
+        </div><!--  end card  -->
+    </div> <!-- end col-md-12 -->
+</div> <!-- end row -->
+
+        
+<script type="text/javascript">
+
+
+    $().ready(function(){
+
+    	
+    	//渲染select,查询类别信息
+		$.ajax({
+            url: "/type/typelist",
+            type: "post",
+            dataType: "json",
+            success: function (data) {
+                $("#typeId").html('');//移除原元素
+                if (data.length > 0) {
+                    $.each(data, function (i) {
+                        $("<option value='" + data[i].id + "' >" + data[i].type + "</option>").appendTo("#typeId");//构造html元素并插入
+                    });
+                    $('#typeId').selectpicker('refresh');
+                }
+                else {
+                    $.MsgShow(data.Message, "fail");
+                }
+            }
+        });
+    	
+        //重写验证规则，设置返回中文
+        $.validator.messages.required = jQuery.validator.format("请填写必填字段");
+        $.validator.messages.equalTo = jQuery.validator.format("两次密码输入不一致");
+        // 库存数量匹配规则
+        jQuery.validator.addMethod("isNum", function(value, element) {
+            var length = value.length;
+            return ( /^[1-9]\d*|0$/.test(value));
+        }, "请正确的库存。");
+        
+		
+        $('#allInputsFormValidation').validate({
+        	submitHandler: function(form) { //通过之后回调
+        		//进行ajax传值
+        		var formdata = new FormData($("#allInputsFormValidation")[0]);
+        		$.ajax({
+        			data:formdata,
+                	dataType:"text",
+            		type:"post",
+            		url:"/stuff/stuffadd",
+           		    cache: false,
+                    processData: false,
+                    contentType: false,
+                    async: false,
+            		success:function(data){
+            			//console.log(data);
+            			if(data == "1"){
+            				window.location.href = "/page/stuff_list";
+            			}else{
+            				alert(data);
+            			}
+            		},
+        		});
+        	},
+        });
+        
+		
+        
+
+        
+    });
+
+
+</script>
+
+
+
+</html>

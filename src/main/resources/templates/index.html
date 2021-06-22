@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common :: common_head(~{::title},~{::style})">
+
+    <title>家电库存管理系统</title>
+    <style>
+        .table th,.table td{ text-align:center;vertical-align:middle!important;}
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+<div class="sidebar" data-color="#b1ffff" data-image="/static/picture/full-screen-image-4.jpg">
+     <div class="logo">
+         <a href="#" class="logo-text">家电库存管理系统</a>
+     </div>
+     <div class="logo logo-mini">
+         <a href="#" class="logo-text">
+             Ct
+         </a>
+     </div>
+
+     <div class="sidebar-wrapper">
+         <!-- 管理员权限 -->
+         <ul class="nav" th:if="${roleid eq '1'}">
+             	<li>
+                 <a data-toggle="collapse" href="#usersExamples">
+                     <i class="pe-7s-users"></i>
+                     <p>人员管理
+                         <b class="caret"></b>
+                     </p>
+                 </a>
+                 <div class="collapse" id="usersExamples">
+                     <ul class="nav">
+                         <li><a onclick="setMenu('/page/user_list')" href="#">人员列表</a></li>
+                         <li><a onclick="setMenu('/page/user_add')" href="#">增加人员信息</a></li>
+                     </ul>
+                 </div>
+             </li>
+             <li>
+                 <a data-toggle="collapse" href="#typesExamples">
+                     <i class="pe-7s-users"></i>
+                     <p>家电类型管理
+                         <b class="caret"></b>
+                     </p>
+                 </a>
+                 <div class="collapse" id="typesExamples">
+                     <ul class="nav">
+                         <li><a onclick="setMenu('/page/type_list')" href="#">家电类型列表</a></li>
+                         <li><a onclick="setMenu('/page/type_add')" href="#">增加家电类型信息</a></li>
+                     </ul>
+                 </div>
+             </li>
+             <li>
+                 <a data-toggle="collapse" href="#suppliersExamples">
+                     <i class="pe-7s-users"></i>
+                     <p>家电供货商管理
+                         <b class="caret"></b>
+                     </p>
+                 </a>
+                 <div class="collapse" id="suppliersExamples">
+                     <ul class="nav">
+                         <li><a onclick="setMenu('/page/supplier_list')" href="#">供货商列表</a></li>
+                         <li><a onclick="setMenu('/page/supplier_add')" href="#">增加供货商信息</a></li>
+                     </ul>
+                 </div>
+             </li>
+             <li>
+                 <a data-toggle="collapse" href="#ordersExamples">
+                     <i class="pe-7s-users"></i>
+                     <p>家电订单管理
+                         <b class="caret"></b>
+                     </p>
+                 </a>
+                 <div class="collapse" id="ordersExamples">
+                     <ul class="nav">
+                         <li><a onclick="setMenu('/page/order_list_admin')" href="#">家电订单列表</a></li>
+                         <li><a onclick="setMenu('/page/order_add')" href="#">增加订单信息</a></li>
+                     </ul>
+                 </div>
+             </li>
+             <li>
+                 <a data-toggle="collapse" href="#stuffsExamples">
+                     <i class="pe-7s-users"></i>
+                     <p>家电库存信息管理
+                         <b class="caret"></b>
+                     </p>
+                 </a>
+                 <div class="collapse" id="stuffsExamples">
+                     <ul class="nav">
+                         <li><a onclick="setMenu('/page/stuff_list')" href="#">家电库存列表</a></li>
+                         <li><a onclick="setMenu('/page/stuff_add')" href="#">增加家电库存信息</a></li>
+                     </ul>
+                 </div>
+             </li>
+         </ul>
+
+         <!-- 业务人员权限 -->
+         <ul class="nav" th:if="${roleid eq '2'}">
+
+             <li>
+                 <a data-toggle="collapse" href="#ordersExamples">
+                     <i class="pe-7s-users"></i>
+                     <p>家电订单管理
+                         <b class="caret"></b>
+                     </p>
+                 </a>
+                 <div class="collapse" id="ordersExamples">
+                     <ul class="nav">
+                         <li><a onclick="setMenu('/page/order_list')" href="#">订单列表</a></li>
+                         <li><a onclick="setMenu('/page/order_add')" href="#">增加订单信息</a></li>
+                     </ul>
+                 </div>
+             </li>
+         </ul>
+
+         <!-- 库存管理人员 -->
+         <ul class="nav" th:if="${roleid eq '3'}">
+             <li>
+                 <a data-toggle="collapse" href="#typesExamples">
+                     <i class="pe-7s-users"></i>
+                     <p>家电类型管理
+                         <b class="caret"></b>
+                     </p>
+                 </a>
+                 <div class="collapse" id="typesExamples">
+                     <ul class="nav">
+                         <li><a onclick="setMenu('/page/type_list')" href="#">家电类型列表</a></li>
+                         <li><a onclick="setMenu('/page/type_add')" href="#">增加家电类型信息</a></li>
+                     </ul>
+                 </div>
+             </li>
+             <li>
+                 <a data-toggle="collapse" href="#stuffsExamples">
+                     <i class="pe-7s-users"></i>
+                     <p>家电库存信息管理
+                         <b class="caret"></b>
+                     </p>
+                 </a>
+                 <div class="collapse" id="stuffsExamples">
+                     <ul class="nav">
+                         <li><a onclick="setMenu('/page/stuff_list')" href="#">家电库存列表</a></li>
+                         <li><a onclick="setMenu('/page/stuff_add')" href="#">增加家电库存信息</a></li>
+                     </ul>
+                 </div>
+             </li>
+         </ul>
+     </div>
+</div>
+
+    <div class="main-panel">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-minimize">
+                    <button id="minimizeSidebar" class="btn btn-warning btn-fill btn-round btn-icon">
+                        <i class="fa fa-ellipsis-v visible-on-sidebar-regular"></i>
+                        <i class="fa fa-navicon visible-on-sidebar-mini"></i>
+                    </button>
+                </div>
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <!-- <a class="navbar-brand" href="#">Bootstrap Table</a>-->
+                </div>
+                <div class="collapse navbar-collapse">
+
+                    <form class="navbar-form navbar-left navbar-search-form" role="search">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                            <input type="text" value="" class="form-control" placeholder="Search...">
+                        </div>
+                    </form>
+
+                    <ul class="nav navbar-nav navbar-right">
+
+
+                        <li class="dropdown dropdown-with-icons">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="fa fa-user"></i>
+                                <p class="hidden-md hidden-lg">
+                                    个人信息
+                                    <b class="caret"></b>
+                                </p>
+                            </a>
+                            <ul class="dropdown-menu dropdown-with-icons">
+                                <li>
+                                    <a href="#" onclick="setMenu('/page/user_info')">
+                                        <i class="fa fa-archive"></i> 个人信息
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" th:onclick="setMenu('/user/findByIdToPassword?id=' + ${userid})">
+                                        <i class="pe-7s-help1"></i> 修改密码
+                                    </a>
+                                </li> 
+                                <li>
+                                    <a href="/user/loginout" class="text-danger" >
+                                        <i class="pe-7s-close-circle"></i>
+                                        退出
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+
+        <div class="content">
+        	 <div class="container-fluid">
+           <!-- <iframe id="iframe-page-content" src="/page/user_list" width="100%" frameborder="0" border="0" marginwidth="0" marginheight=" 0" scrolling="no" allowtransparency="yes"></iframe> -->
+				<iframe src="/page/user_info" scrolling-x="no" scrolling-y="yes" onload="setIframeHeight(this)" id="bodyCenter" name="workspace" frameborder="0" width="100%" height="50%" style="height:90vh!important;" ></iframe>
+			</div>
+        </div>
+
+
+    </div>
+</div>
+
+
+</body>
+
+<script type="text/javascript">
+/**iframe 自适应大小函数 */
+function setIframeHeight(iframe) {
+    if (iframe) {
+	    var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
+	    if (iframeWin.document.body) {
+	       iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
+	    }
+    }
+};
+/** 设置ifrema 切换路径函数 */
+function setMenu(menusrc){
+	$("#bodyCenter").attr("src",menusrc);
+}
+/** 动态切换导航栏 */
+$("ul li a").bind("click",function(){
+	$("ul li").removeClass("active");
+	$(this).parent().addClass("active");
+
+});
+
+</script>
+
+<script>
+
+
+</script>
+
+</html>

@@ -1,0 +1,211 @@
+<head th:replace="common :: common_head(~{},~{style})" xmlns:th="http://www.thymeleaf.org">
+	<style>
+		.table th,.table td{ text-align:center;vertical-align:middle!important;}
+		.fixed-table-body{
+			height:53% !important;
+			overflow: auto;
+		}
+	</style>
+</head>
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+
+			<div class="toolbar">
+				<!--        Here you can write extra buttons/actions for the toolbar              -->
+				<button id="add" class="btn btn-secondary">增加供货商</button>
+				<button id="remove" class="btn btn-secondary">删除供货商</button>
+			</div>
+
+			<table id="bootstrap-table" class="table" data-url="/supplier/supplierlist">
+				<thead>
+					<th data-field="state" data-checkbox="true"></th>
+					<th data-field="id" data-formatter="numFormatter">编号</th>
+					<th data-field="name" data-sortable="true">供货商名称</th>
+					<th data-field="phone" data-sortable="true">手机号</th>
+					<th data-field="address" data-sortable="true">地址</th>
+					<th data-field="types" data-sortable="true" data-formatter="typesFormatter">类别</th>
+					<th data-field="actions" class="td-actions text-right"
+						data-events="operateEvents" data-formatter="operateFormatter">操作</th>
+				</thead>
+				<tbody>
+
+				</tbody>
+			</table>
+		</div>
+		<!--  end card  -->
+		<div class="card">
+			<div id="supplierChart" style="height: 300px; width: 100%;"></div>
+		</div>
+		<!--  end card  -->
+	</div>
+	<!-- end col-md-12 -->
+</div>
+<!-- end row -->
+
+
+
+
+<script type="text/javascript">
+    var $table = $('#bootstrap-table');
+
+    function numFormatter(value, row, index){
+    	return index+1;
+    }
+	
+    function typesFormatter(value, row, index){
+    	var date = "";
+    	for(var i=0 ; i<value.length;i++){
+    		date += value[i].type + " , ";
+    	}
+    	
+    	return date.substring(0, date.length - 2);
+    }
+    
+    function operateFormatter(value, row, index) {
+        return [
+            '<a rel="tooltip" title="Edit" class="btn btn-simple btn-warning btn-icon table-action edit" href="javascript:void(0)">',
+            '<i class="fa fa-edit"></i>',
+            '</a>',
+            '<a rel="tooltip" title="Remove" class="btn btn-simple btn-danger btn-icon table-action remove" href="javascript:void(0)">',
+            '<i class="fa fa-remove"></i>',
+            '</a>'
+        ].join('');
+    }
+
+    $().ready(function(){
+    	$.ajax({
+    		dataType:"text",
+    		url: "/supplier/supplierlist",
+    		type: "get",
+    		success: function(e) {
+    			let supplier = JSON.parse(e)
+    			let l = supplier.length
+    			for (let i = 0; i < supplier.length; i++) {
+    				supplier[i].label = supplier[i].name
+    				supplier[i].y = (100.0 / l).toFixed(2)
+    			}
+    			var chart = new CanvasJS.Chart("supplierChart", {
+                	theme: "light2",
+                	exportEnabled: true,
+                	animationEnabled: true,
+                	title: {
+                		text: "供应商分析图"
+                	},
+                	data: [{
+                		type: "pie",
+                		startAngle: 25,
+                		toolTipContent: "<b>{label}</b>: {y}%",
+                		showInLegend: "true",
+                		legendText: "{label}",
+                		indexLabelFontSize: 16,
+                		indexLabel: "{label} - {y}%",
+                		dataPoints: supplier
+                	}]
+                });
+                chart.render();
+    		}
+    			
+    	})
+        window.operateEvents = {
+            'click .edit': function (e, value, row, index) {
+               /* info = JSON.stringify(row);
+                alert(row.id);
+                swal('You click edit icon, row: ', info);
+                console.log(info);*/
+                location.href = "/supplier/findById?id="+row.id;
+            },
+            'click .remove': function (e, value, row, index) {
+                //console.log(row);
+                $table.bootstrapTable('remove', {
+                    field: 'id',
+                    values: [row.id]
+                });
+                $.ajax({
+                	dataType:"text",
+                	url: "/supplier/deteteById?id=" + [row.id],
+                	type:"post",
+                	success: function(data){
+                		alert(data);
+                		$table.bootstrapTable( "refresh");
+                	}
+                });
+            }
+        };
+        /**删除方法*/
+        $("#remove").click(function () {
+            var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
+                return row.id;
+            });
+            if(ids != ""){
+            	$.ajax({
+                	//data:{"ids":ids},
+                	dataType:"text",
+                	url:"/supplier/deteteByIds?ids=" + ids ,
+                	type:"post",
+                	success: function(data){
+                		alert(data);
+                		$table.bootstrapTable( "refresh");
+                	}
+                });
+            }
+            
+            $table.bootstrapTable('remove', {
+                field: 'id',
+                values: ids,
+            });
+        });
+        /**增加方法*/
+        $("#add").click(function () {
+            window.location.href="/page/supplier_add";
+        });
+
+        $table.bootstrapTable({
+            undefinedText: 'N/A',//未定义文本
+           // url: dat ,
+            toolbar: ".toolbar",//工具按钮用哪个容器
+            clickToSelect: true,
+            showRefresh: true,
+            search: true,
+            //showToggle: true,
+            //showColumns: true,
+            pagination: true,
+            searchAlign: 'right',
+            searchPlaceholder: '模糊搜索',
+            pageSize: 8,
+            clickToSelect: false,
+            pageList: [8,10,25,50,100],
+            formatShowingRows: function(pageFrom, pageTo, totalRows){
+                //do nothing here, we don't want to show the text "showing x of y from..."
+            },
+            formatRecordsPerPage: function(pageNumber){
+                return pageNumber + "条/页";
+            },
+            icons: {
+                refresh: 'fa fa-refresh',
+                toggle: 'fa fa-th-list',
+                columns: 'fa fa-columns',
+                detailOpen: 'fa fa-plus-circle',
+                detailClose: 'fa fa-minus-circle'
+            }
+        });
+
+        //activate the tooltips after the data table is initialized
+        $('[rel="tooltip"]').tooltip();
+
+        $(window).resize(function () {
+            $table.bootstrapTable('resetView');
+        });
+
+
+    });
+
+</script>
+
+<script>
+
+
+</script>
+
+</html>

@@ -1,0 +1,156 @@
+<head th:replace="common :: common_head(~{},~{})" xmlns:th="http://www.thymeleaf.org">
+</head>
+
+<div class="row" xmlns:th="http://www.thymeleaf.org">
+	<div class="col-md-12">
+		<div class="card">
+			<form id="allInputsFormValidation" class="form-horizontal" 
+				method="post" novalidate="">
+				<div class="content">
+					<legend>修改供应商信息</legend>
+					<input type="hidden" name="id" th:value="${supplier.id }" />
+					<input type="hidden" name="state" th:value="${supplier.state }" />
+					<div class="types" style="display: none;" th:each="type,typeStat : ${supplier.types}" th:text="${type.id}"></div>
+						<fieldset>
+						<div class="form-group">
+							<label class="col-sm-4 control-label">供货商名称<star>*</star></label>
+							<div class="col-sm-6">
+								<input class="form-control" type="text" name="name" th:value="${supplier.name }"
+									required="required" />
+							</div>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="col-sm-4 control-label">供货商电话<star>*</star></label>
+							<div class="col-sm-6">
+								<input class="form-control" type="text" name="phone" th:value="${supplier.phone }"
+									required="required" isMobile="true" />
+							</div>
+						</div>
+					</fieldset>
+
+					 <fieldset>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">供货商地址<star>*</star></label>
+                            <div class="col-sm-6">
+                                <input class="form-control"
+                                       name="address"
+                                       type="text"
+                                       required="true"
+                                       th:value="${supplier.address }"
+                                />
+                            </div>
+                        </div>
+                    </fieldset>
+
+					
+					<fieldset>
+                    	<div class="form-group">
+                            <label class="col-sm-4 control-label">选择供货商类别<star>*</star></label>
+                            <div class="col-sm-6">
+                            	<select multiple data-title="请选择（多选择框）" id="typeId" name="typeId" required="required" class="selectpicker" data-style="btn-info btn-fill btn-block" data-menu-style="dropdown-blue">
+                                            
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+
+
+				</div>
+				<div class="footer text-center">
+					<button type="submit" class="btn btn-info btn-fill">修改</button>
+					<button type="reset" class="btn btn-info btn-fill">重置</button>
+				</div>
+			</form>
+
+		</div>
+		<!--  end card  -->
+	</div>
+	<!-- end col-md-12 -->
+</div>
+<!-- end row -->
+
+
+
+<script type="text/javascript">
+
+
+$().ready(function(){
+	
+	//渲染select,查询角色信息
+	$.ajax({
+        url: "/type/typelist",
+        type: "post",
+        dataType: "json",
+        success: function (data) {
+            $("#typeId").html('');//移除原元素
+            if (data.length > 0) {
+            	//绑定select元素值
+                $.each(data, function (i) {
+                	$("<option value='" + data[i].id + "' >" + data[i].type + "</option>").appendTo("#typeId");//构造html元素并插入
+                });
+            	//select元素值选中判定
+                $.each($("#typeId option"), function (i) {
+					for (let i = 0; i < $(".types").length; i++) {
+						if($(".types").eq(i).text() == $(this).val()){
+							$(this).attr("selected","selected");
+						}
+					}
+                });
+                
+               
+                
+                $('#typeId').selectpicker('refresh');
+            }
+            else {
+                $.MsgShow(data.Message, "fail");
+            }
+        }
+    });
+	
+	
+	
+    //重写验证规则，设置返回中文
+    $.validator.messages.required = jQuery.validator.format("请填写必填字段");
+    $.validator.messages.equalTo = jQuery.validator.format("两次密码输入不一致");
+    // 手机号码验证
+    jQuery.validator.addMethod("isMobile", function(value, element) {
+        var length = value.length;
+        return (length == 11 && /^((1[0-9]{1})+\d{9})$/.test(value));
+    }, "请正确填写您的手机号码。");
+    
+	
+    $('#allInputsFormValidation').validate({
+    	submitHandler: function(form) { //通过之后回调
+    		//进行ajax传值
+    		$.ajax({
+    			data:$("#allInputsFormValidation").serialize(),
+            	dataType:"text",
+        		type:"post",
+        		url:"/supplier/supplierupdate",
+        		success:function(data){
+        			if(data == "1"){
+        				window.location.href = "/page/supplier_list";
+        			}else{
+        				alert(data);
+        			}
+        		},
+    		});
+    	},
+    });
+	
+    
+});
+
+
+
+</script>
+
+<script>
+
+
+</script>
+
+</html>
