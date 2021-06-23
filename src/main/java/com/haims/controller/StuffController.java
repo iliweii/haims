@@ -104,17 +104,17 @@ public class StuffController {
 	@RequestMapping(value = "/stuffupdate", produces = "text/html;charset=UTF-8")
 	public String stuffupdate(Stuff stuff, MultipartFile file,
 			HttpServletRequest request) throws Exception {
-		File newFile = new File(request.getServletContext().getRealPath(
-				"/image"));
+		File newFile = new File(fileRootPath);
 		if (!newFile.exists()) {
 			newFile.mkdirs();
 		}
-		// 上传文件路径及文件名
-		String fileName = FileUtil.executeUpload(newFile.getAbsolutePath()
-				+ "/", file);
-		stuff.setUrl(request.getServletContext().getContextPath() + "/image/"
-				+ fileName);
-
+		if (file.getSize() != 0) {
+			// 上传文件路径及文件名
+			String fileName = FileUtil.executeUpload(newFile.getAbsolutePath()
+					+ "/", file);
+			stuff.setUrl( "/static/image/"
+					+ fileName);
+		}
 		if (stuffService.updateByPrimaryKeySelective(stuff) > 0) {
 			return "1";
 		}

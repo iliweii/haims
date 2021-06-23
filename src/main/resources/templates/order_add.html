@@ -36,7 +36,7 @@
                     
                     <fieldset>
                     	<div class="form-group">
-                            <label class="col-sm-4 control-label">选择材料类别<star>*</star></label>
+                            <label class="col-sm-4 control-label">选择家电类别<star>*</star></label>
                             <div class="col-sm-6">
                              	<select class="form-control selectpicker"  data-title="请选择"  id="typeId" name="typeId" required="required">
                                 </select>
@@ -173,7 +173,7 @@
             });
     	});
     	
-    	//材料变化，更改库存变化
+    	//家电变化，更改库存变化
     	$("#stuffId").change(function(){
     		$.ajax({
         		data:{"id":$("#stuffId option:selected").val()},
