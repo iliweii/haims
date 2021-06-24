@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -135,7 +136,12 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/userupdate", produces = "text/html;charset=UTF-8")
 	public String userupdate(User user) {
-		user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
+		if (user.getPassword().equals("******")) {
+			// 说明修改个人信息界面中，用户未修改密码
+			user.setPassword(null);
+		} else {
+			user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
+		}
 		// 查询原用户信息
 		UserExample updateExample = new UserExample();
 		updateExample.createCriteria().andIdEqualTo(user.getId());
@@ -208,10 +214,10 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping("/findByIdToPassword")
-	public ModelAndView findByIdToPassword(String id) {
-		ModelAndView mv = new ModelAndView("user_password");
-		mv.addObject("user", userService.selectByPrimaryKey(id));
-		return mv;
+	public String findByIdToPassword(String id, Model model) {
+		System.out.println(id);
+		model.addAttribute("user", userService.selectByPrimaryKey(id));
+		return "user_password";
 	}
 
 	/**

@@ -52,12 +52,12 @@
     }
 	
     function roleFormatter(value, row, index){
-    	if(value == 0){
+    	if(value == 1){
     		return "管理员";
-    	}else if(value == 1){
-    		return "快递员";
+    	}else if(value == 2){
+    		return "库存管理人员";
     	}else{
-    		return "普通用户";
+    		return "业务人员";
     	}
     }
     

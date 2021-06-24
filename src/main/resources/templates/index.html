@@ -95,27 +95,8 @@
              </li>
          </ul>
 
-         <!-- 业务人员权限 -->
+         <!-- 库存管理人员权限 -->
          <ul class="nav" th:if="${roleid eq '2'}">
-
-             <li>
-                 <a data-toggle="collapse" href="#ordersExamples">
-                     <i class="pe-7s-users"></i>
-                     <p>家电订单管理
-                         <b class="caret"></b>
-                     </p>
-                 </a>
-                 <div class="collapse" id="ordersExamples">
-                     <ul class="nav">
-                         <li><a onclick="setMenu('/page/order_list')" href="#">订单列表</a></li>
-                         <li><a onclick="setMenu('/page/order_add')" href="#">增加订单信息</a></li>
-                     </ul>
-                 </div>
-             </li>
-         </ul>
-
-         <!-- 库存管理人员 -->
-         <ul class="nav" th:if="${roleid eq '3'}">
              <li>
                  <a data-toggle="collapse" href="#typesExamples">
                      <i class="pe-7s-users"></i>
@@ -131,6 +112,19 @@
                  </div>
              </li>
              <li>
+                 <a data-toggle="collapse" href="#ordersExamples">
+                     <i class="pe-7s-users"></i>
+                     <p>家电订单列表
+                         <b class="caret"></b>
+                     </p>
+                 </a>
+                 <div class="collapse" id="ordersExamples">
+                     <ul class="nav">
+                         <li><a onclick="setMenu('/page/order_list')" href="#">订单列表</a></li>
+                     </ul>
+                 </div>
+             </li>
+             <li>
                  <a data-toggle="collapse" href="#stuffsExamples">
                      <i class="pe-7s-users"></i>
                      <p>家电库存信息管理
@@ -141,6 +135,25 @@
                      <ul class="nav">
                          <li><a onclick="setMenu('/page/stuff_list')" href="#">家电库存列表</a></li>
                          <li><a onclick="setMenu('/page/stuff_add')" href="#">增加家电库存信息</a></li>
+                     </ul>
+                 </div>
+             </li>
+
+         </ul>
+
+         <!-- 业务人员 -->
+         <ul class="nav" th:if="${roleid eq '3'}">
+             <li>
+                 <a data-toggle="collapse" href="#ordersExamples">
+                     <i class="pe-7s-users"></i>
+                     <p>家电订单管理
+                         <b class="caret"></b>
+                     </p>
+                 </a>
+                 <div class="collapse" id="ordersExamples">
+                     <ul class="nav">
+                         <li><a onclick="setMenu('/page/order_list_admin')" href="#">订单列表</a></li>
+                         <li><a onclick="setMenu('/page/order_add')" href="#">增加订单信息</a></li>
                      </ul>
                  </div>
              </li>
@@ -193,7 +206,8 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" th:onclick="setMenu('/user/findByIdToPassword?id=' + ${userid})">
+                                    <input type="hidden" name="userIdT" th:value="${userid}">
+                                    <a href="#" class="update_pwd" onclick="setMenu('/user/findByIdToPassword?id=' + $('input[name=userIdT]').val() )">
                                         <i class="pe-7s-help1"></i> 修改密码
                                     </a>
                                 </li> 
@@ -215,7 +229,9 @@
         <div class="content">
         	 <div class="container-fluid">
            <!-- <iframe id="iframe-page-content" src="/page/user_list" width="100%" frameborder="0" border="0" marginwidth="0" marginheight=" 0" scrolling="no" allowtransparency="yes"></iframe> -->
-				<iframe src="/page/user_info" scrolling-x="no" scrolling-y="yes" onload="setIframeHeight(this)" id="bodyCenter" name="workspace" frameborder="0" width="100%" height="50%" style="height:90vh!important;" ></iframe>
+                 <iframe th:if="${roleid eq '1'}" src="/page/user_info" scrolling-x="no" scrolling-y="yes" onload="setIframeHeight(this)" id="bodyCenter" name="workspace" frameborder="0" width="100%" height="50%" style="height:90vh!important;" ></iframe>
+                 <iframe th:if="${roleid eq '2'}" src="/page/stuff_list" scrolling-x="no" scrolling-y="yes" onload="setIframeHeight(this)" id="bodyCenter" name="workspace" frameborder="0" width="100%" height="50%" style="height:90vh!important;" ></iframe>
+                 <iframe th:if="${roleid eq '3'}" src="/page/order_list_admin" scrolling-x="no" scrolling-y="yes" onload="setIframeHeight(this)" id="bodyCenter" name="workspace" frameborder="0" width="100%" height="50%" style="height:90vh!important;" ></iframe>
 			</div>
         </div>
 

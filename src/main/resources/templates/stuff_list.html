@@ -15,18 +15,18 @@
 
 			<div class="toolbar">
 				<!--        Here you can write extra buttons/actions for the toolbar              -->
-				<button id="add" class="btn btn-secondary">增加材料</button>
-				<button id="remove" class="btn btn-secondary">删除材料</button>
+				<button id="add" class="btn btn-secondary">增加家电库存</button>
+				<button id="remove" class="btn btn-secondary">删除家电库存</button>
 			</div>
 
 			<table id="bootstrap-table" class="table" data-url="/stuff/stufflist">
 				<thead>
 					<th data-field="checked" data-checkbox="true"></th>
 					<th data-field="num" data-formatter="numFormatter">编号</th>
-					<th data-field="url" data-sortable="true" data-formatter="urlFormatter">材料图片</th>
-					<th data-field="name" data-sortable="true">材料名称</th>
-					<th data-field="typeName" data-sortable="true">材料类别</th>
-					<th data-field="state" data-sortable="true" data-formatter="statesFormatter">材料状态</th>
+					<th data-field="url" data-sortable="true" data-formatter="urlFormatter">家电库存图片</th>
+					<th data-field="name" data-sortable="true">家电库存名称</th>
+					<th data-field="typeName" data-sortable="true">家电库存类别</th>
+					<th data-field="state" data-sortable="true" data-formatter="statesFormatter">家电库存状态</th>
 					<th data-field="actions" class="td-actions text-right"
 						data-events="operateEvents" data-formatter="operateFormatter">操作</th>
 				</thead>
@@ -62,9 +62,9 @@
 	
     function statesFormatter(value, row, index){
     	if(value == 0){
-    		return "材料充足";
+    		return "家电库存充足";
     	}else{
-    		return "材料不足";
+    		return "家电库存不足";
     	}
     }
     
@@ -105,7 +105,7 @@
                     theme: "light1",
                     animationEnabled: true,
                     title: {
-                        text: "材料分析柱状图"
+                        text: "家电库存分析柱状图"
                     },
                     data: [{
                         type: "column",
@@ -118,7 +118,7 @@
                 	exportEnabled: true,
                 	animationEnabled: true,
                 	title: {
-                		text: "材料分析饼状图"
+                		text: "家电库存分析饼状图"
                 	},
                 	data: [{
                 		type: "pie",
