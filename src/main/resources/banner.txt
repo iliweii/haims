@@ -1,0 +1,9 @@
+  _    _          _____ __  __  _____
+ | |  | |   /\   |_   _|  \/  |/ ____|
+ | |__| |  /  \    | | | \  / | (___
+ |  __  | / /\ \   | | | |\/| |\___ \
+ | |  | |/ ____ \ _| |_| |  | |____) |
+ |_|  |_/_/    \_\_____|_|  |_|_____/
+
+Home Appliance Inventory Management System
+©1995-2004 Wei Li and Bin Jiang and Kangtai Dou. All Rights Reserved.

@@ -16,7 +16,7 @@
 			<div class="toolbar">
 				<!--        Here you can write extra buttons/actions for the toolbar              -->
 				<button id="add" class="btn btn-secondary">增加订单</button>
-				<button id="remove" class="btn btn-secondary">删除订单</button>
+<!--				<button id="remove" class="btn btn-secondary">删除订单</button>-->
 			</div>
 
 			<table id="bootstrap-table" class="table" data-url="/order/orderlist">
@@ -61,9 +61,9 @@
 	
     function statesFormatter(value, row, index){
     	if(value == 1){
-    		return "购入";
+    		return "入库";
     	}else if(value == 2){
-    		return "卖出";
+    		return "销售";
     	}else{
     		return "退货";
     	}
@@ -71,12 +71,9 @@
     
     function operateFormatter(value, row, index) {
         return [
-            '<a rel="tooltip" title="Edit" class="btn btn-simple btn-warning btn-icon table-action edit" href="javascript:void(0)">',
-            '<i class="fa fa-edit"></i>',
-            '</a>',
-            '<a rel="tooltip" title="Remove" class="btn btn-simple btn-danger btn-icon table-action remove" href="javascript:void(0)">',
-            '<i class="fa fa-remove"></i>',
-            '</a>'
+			'<a rel="tooltip" title="查看" class="btn btn-simple btn-warning btn-icon table-action edit" href="javascript:void(0)">',
+			'<i class="fa fa-eye"></i>',
+			'</a>',
         ].join('');
     }
 
@@ -95,7 +92,7 @@
        			}); 
        		}, 
             'click .edit': function (e, value, row, index) {
-                location.href = "/order/findById?id="+row.id;
+                location.href = "/order/findByIdview?id="+row.id;
             },
             'click .remove': function (e, value, row, index) {
                 //console.log(row);

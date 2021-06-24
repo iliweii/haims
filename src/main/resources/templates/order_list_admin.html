@@ -23,9 +23,9 @@
 					<th data-field="checked" data-checkbox="true"></th>
 					<th data-field="num" data-formatter="numFormatter">编号</th>
 					<th data-field="name" data-sortable="true">订单名称</th>
-					<th data-field="typeName" data-sortable="true">商品类别</th>
+					<th data-field="typeName" data-sortable="true">家电类别</th>
 					<th data-field="supplierName" data-sortable="true">供货商</th>
-					<th data-field="stuffName" data-sortable="true">商品</th>
+					<th data-field="stuffName" data-sortable="true">家电</th>
 					
 					<th data-field="state" data-sortable="true" data-formatter="statesFormatter">订单类别</th>
 					<th data-field="number" data-sortable="true">数量</th>
@@ -64,9 +64,9 @@
 	
     function statesFormatter(value, row, index){
     	if(value == 1){
-    		return "购入";
+    		return "入库";
     	}else if(value == 2){
-    		return "卖出";
+    		return "销售";
     	}else{
     		return "退货";
     	}
@@ -77,6 +77,9 @@
             '<a rel="tooltip" title="查看" class="btn btn-simple btn-warning btn-icon table-action edit" href="javascript:void(0)">',
             '<i class="fa fa-eye"></i>',
             '</a>',
+			'<a rel="tooltip" title="修改" class="btn btn-simple btn-warning btn-icon table-action edit" href="javascript:void(0)">',
+			'<i class="fa fa-edit"></i>',
+			'</a>',
             '<a rel="tooltip" title="删除" class="btn btn-simple btn-danger btn-icon table-action remove" href="javascript:void(0)">',
             '<i class="fa fa-remove"></i>',
             '</a>'
@@ -166,7 +169,7 @@
     	})
         window.operateEvents = {
             'click .edit': function (e, value, row, index) {
-                location.href = "/order/findByIdview?id="+row.id;
+				location.href = "/order/findById?id="+row.id;
             },
             'click .remove': function (e, value, row, index) {
                 //console.log(row);

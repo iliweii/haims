@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -15,6 +16,8 @@ import com.haims.pojo.User;
 import com.haims.pojo.UserExample;
 import com.haims.service.UserService;
 import com.haims.util.UUIDUtil;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/user")
@@ -33,6 +36,7 @@ public class UserController {
 	@RequestMapping(value = "/login", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String login(User user, HttpServletRequest request) {
+		user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
 		HttpSession session = request.getSession();
 		// 设置查找条件
 		UserExample userExample = new UserExample();
@@ -79,7 +83,7 @@ public class UserController {
 		UserExample userExample = new UserExample();
 		userExample.createCriteria().andPhoneEqualTo(user.getPhone())
 				.andStateEqualTo(Constant.USER_STATE_USE);
-		user.setPassword("123456");
+		user.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
 		if (userService.selectByExample(userExample).size() > 0) {
 			return "手机号已被占用";
 		}
@@ -102,7 +106,11 @@ public class UserController {
 		// 不能被查到删除的角色信息以及系统管理员信息
 		phoneExample.createCriteria().andIdNotEqualTo(Constant.SYS_ADMIN_ID)
 				.andStateEqualTo(Constant.USER_STATE_USE);
-		return JSON.toJSONString(userService.selectByExample(phoneExample));
+		List<User> users = userService.selectByExample(phoneExample);
+		for (int i = 0; i < users.size(); i++) {
+			users.get(i).setPassword("(******)MD5已加密");
+		}
+		return JSON.toJSONString(users);
 	}
 
 	/**
@@ -127,6 +135,7 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/userupdate", produces = "text/html;charset=UTF-8")
 	public String userupdate(User user) {
+		user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
 		// 查询原用户信息
 		UserExample updateExample = new UserExample();
 		updateExample.createCriteria().andIdEqualTo(user.getId());
@@ -213,7 +222,7 @@ public class UserController {
 	@RequestMapping(value = "/resetPassword", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String resetPassword(User user) {
-		user.setPassword("123456");
+		user.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
 		if (userService.updateByPrimaryKeySelective(user) > 0) {
 			return "1";
 		}

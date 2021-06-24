@@ -1,15 +1,18 @@
 <head th:replace="common :: common_head(~{},~{})" xmlns:th="http://www.thymeleaf.org">
 </head>
 
-<div class="row">
+<div class="row" xmlns:th="http://www.thymeleaf.org">
     <div class="col-md-12">
         <div class="card">
             <form id="allInputsFormValidation" class="form-horizontal" novalidate="">
                 <div class="content">
                     <legend>修改订单信息</legend>
-					<input type="hidden" name="id" value="${order.id }" />
-					<input type="hidden" name="userId" value="${order.userId }" />
-					<input type="hidden" name="isDelete" value="${order.isDelete }" />
+					<input type="hidden" name="id" th:value="${order.id }" />
+					<input type="hidden" name="userId" th:value="${order.userId }" />
+                    <input type="hidden" name="isDelete" th:value="${order.isDelete }" />
+                    <input type="hidden" name="typeIdTemp" th:value="${order.typeId }" />
+                    <input type="hidden" name="supplierIdTemp" th:value="${order.supplierId }" />
+                    <input type="hidden" name="stuffIdTemp" th:value="${order.stuffId }" />
                     <fieldset>
                         <div class="form-group">
                             <label class="col-sm-4 control-label">订单名称<star>*</star></label>
@@ -18,7 +21,7 @@
                                        order="text"
                                        name="name"
                                        required="required"
-                                       value="${order.name }"
+                                       th:value="${order.name }"
                                 />
                             </div>
                         </div>
@@ -28,10 +31,10 @@
                         <div class="form-group">
                             <label class="col-sm-4 control-label">订单类别<star>*</star></label>
                             <div class="col-sm-6">
-                                <select class="form-control"  data-title="请选择" name="state" id="state" required="required" class="selectpicker">
-                                	<option value="1" <c:if test="${order.state eq 1 }">selected="selected"</c:if> >购入订单</option>
-                                	<option value="2" <c:if test="${order.state eq 2 }">selected="selected"</c:if> >卖出订单</option>
-                                	<option value="3" <c:if test="${order.state eq 3 }">selected="selected"</c:if> >退货订单</option>
+                                <select class="form-control selectpicker"  data-title="请选择" name="state" id="state" required="required">
+                                	<option value="1" th:selected="${order.state eq 1 }">入库订单</option>
+                                	<option value="2" th:selected="${order.state eq 2 }">销售订单</option>
+                                	<option value="3" th:selected="${order.state eq 3 }">退货订单</option>
                                 </select>
                             </div>
                         </div>
@@ -39,9 +42,9 @@
                     
                     <fieldset>
                     	<div class="form-group">
-                            <label class="col-sm-4 control-label">选择材料类别<star>*</star></label>
+                            <label class="col-sm-4 control-label">选择家电类别<star>*</star></label>
                             <div class="col-sm-6">
-                             	<select class="form-control"  data-title="请选择"  id="typeId" name="typeId" required="required" class="selectpicker">
+                             	<select class="form-control selectpicker"  data-title="请选择"  id="typeId" name="typeId" required="required">
                                 </select>
                             </div>
                         </div>
@@ -51,7 +54,7 @@
                     	<div class="form-group">
                             <label class="col-sm-4 control-label">选择供货商<star>*</star></label>
                             <div class="col-sm-6">
-                             	<select class="form-control"  data-title="请选择"  id="supplierId" name="supplierId" required="required" class="selectpicker">
+                             	<select class="form-control selectpicker"  data-title="请选择"  id="supplierId" name="supplierId" required="required">
                                 </select>
                             </div>
                         </div>
@@ -61,7 +64,7 @@
                     	<div class="form-group">
                             <label class="col-sm-4 control-label">选择商品<star>*</star></label>
                             <div class="col-sm-6">
-                             	<select class="form-control"  data-title="请选择"  id="stuffId" name="stuffId" required="required" class="selectpicker">
+                             	<select class="form-control selectpicker"  data-title="请选择"  id="stuffId" name="stuffId" required="required">
                                 </select>
                             </div>
                         </div>
@@ -77,7 +80,7 @@
                                        required="required"
                                        isNum="true"
                                        isCompare="true"
-                                       value="${order.number }"
+                                       th:value="${order.number }"
                                 />
                                 <label>库存数量：<span id="kucunNum"></span></label>
                             </div>
@@ -88,7 +91,7 @@
                                        name="money"
                                        required="required"
                                        isMoney="true"
-                                       value="${order.money }"
+                                       th:value="${order.money }"
                                 />
                             </div>
                             <label class=" control-label">元</label>
@@ -97,7 +100,7 @@
 
 				</div>
                 <div class="footer text-center">
-                    <button order="submit" id="mysubmit" class="btn btn-info btn-fill">增加</button>
+                    <button order="submit" id="mysubmit" class="btn btn-info btn-fill">修改</button>
                     <button order="button" id="back" class="btn btn-info btn-fill">返回</button>
                 </div>
             </form>
@@ -125,7 +128,7 @@
                 $("#typeId").html('');//移除原元素
                 if (data.length > 0) {
                     $.each(data, function (i) {
-                    	if('${order.typeId }' == data[i].id){
+                    	if($("input[name=typeIdTemp]").val() == data[i].id){
                     		$("<option value='" + data[i].id + "' selected='selected' >" + data[i].type + "</option>").appendTo("#typeId");//构造html元素并插入
                     	}else{
                     		 $("<option value='" + data[i].id + "' >" + data[i].type + "</option>").appendTo("#typeId");//构造html元素并插入
@@ -140,7 +143,7 @@
             }
         });
     	$.ajax({
-    		data:{"typeId":'${order.typeId}'},
+    		data:{"typeId": $("input[name=typeIdTemp]").val()},
             url: "/supplier/findByType",
             type: "post",
             dataType: "json",
@@ -148,7 +151,7 @@
                 $("#supplierId").html('');//移除原元素
                 if (data.length > 0) {
                     $.each(data, function (i) {
-                    	if('${order.supplierId}' == data[i].supplierId){
+                    	if($("input[name=supplierIdTemp]").val() == data[i].supplierId){
                     		$("<option value='" + data[i].supplierId + "' selected='selected' >" + data[i].supplierName + "</option>").appendTo("#supplierId");//构造html元素并插入
                     	}else{
                     		$("<option value='" + data[i].supplierId + "' >" + data[i].supplierName + "</option>").appendTo("#supplierId");//构造html元素并插入
@@ -164,7 +167,7 @@
         });
     	//stuffId 根据type渲染select商品信息
     	$.ajax({
-    		data:{"typeId":'${order.typeId}'},
+    		data:{"typeId": $("input[name=typeIdTemp]").val()},
             url: "/stuff/findByType",
             type: "post",
             dataType: "json",
@@ -172,7 +175,7 @@
                 $("#stuffId").html('');//移除原元素
                 if (data.length > 0) {
                     $.each(data, function (i) {
-                    	if('${order.stuffId}' == data[i].id){
+                    	if($("input[name=stuffIdTemp]").val() == data[i].id){
                     		 $("<option value='" + data[i].id + "' selected='selected' >" + data[i].name + "</option>").appendTo("#stuffId");//构造html元素并插入
                     	}else{
                     		 $("<option value='" + data[i].id + "' >" + data[i].name + "</option>").appendTo("#stuffId");//构造html元素并插入
@@ -189,7 +192,7 @@
         });
     	//初始化商品库存
     	$.ajax({
-    		data:{"id":'${order.stuffId}'},
+    		data:{"id": $("input[name=stuffIdTemp]").val()},
             url: "/stuff/findByIds",
             type: "post",
             dataType: "json",
@@ -244,7 +247,7 @@
             });
     	});
     	
-    	//材料变化，更改库存变化
+    	//家电变化，更改库存变化
     	$("#stuffId").change(function(){
     		$.ajax({
         		data:{"id":$("#stuffId option:selected").val()},
@@ -266,7 +269,7 @@
         // 手机号码验证
         jQuery.validator.addMethod("isMobile", function(value, element) {
             var length = value.length;
-            return (length == 11 && /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/.test(value));
+            return (length == 11 && /^((1[0-9]{1})+\d{9})$/.test(value));
         }, "请正确填写您的手机号码。");
         // 金额验证规则
         jQuery.validator.addMethod("isMoney", function(value, element) {
@@ -286,6 +289,7 @@
      	
         $('#allInputsFormValidation').validate({
         	submitHandler: function(form) { //通过之后回调
+        	    console.log($("#allInputsFormValidation").serialize())
         		//进行ajax传值
         		$.ajax({
         			data:$("#allInputsFormValidation").serialize(),
@@ -294,7 +298,7 @@
             		url:"/order/orderupdate",
             		success:function(data){
             			if(data == "1"){
-            				window.location.href = "/page/order_list";
+            				window.location.href = "/page/order_list_admin";
             			}else{
             				alert(data);
             			}
@@ -302,9 +306,6 @@
         		});
         	},
         });
-        
-		
-        
 
         
     });

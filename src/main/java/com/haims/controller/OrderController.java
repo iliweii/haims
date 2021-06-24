@@ -49,11 +49,11 @@ public class OrderController {
 		Stuff stuff = stuffService.selectByPrimaryKey(order.getStuffId());
 		/* 购入和卖出、退货订单区分 */
 		if (order.getState() == 1) {// 购入订单
-			// 对材料表中的库存进行新增
+			// 对家电库存表中的库存进行新增
 			stuff.setNumber(String.valueOf(Integer.parseInt(order.getNumber())
 					+ Integer.parseInt(stuff.getNumber())));
 		} else {// 卖出、退货订单
-			// 材料表中库存减
+			// 家电库存表中库存减
 			stuff.setNumber(String.valueOf(Integer.parseInt(stuff.getNumber())
 					- Integer.parseInt(order.getNumber())));
 		}
@@ -132,15 +132,24 @@ public class OrderController {
 	public String orderupdate(Order order) {
 		Stuff stuff = stuffService.selectByPrimaryKey(order.getStuffId());
 		/* 购入和卖出、退货订单区分 */
-		if (order.getState() == 1) {// 购入订单
-			// 对材料表中的库存进行新增
-			stuff.setNumber(String.valueOf(Integer.parseInt(order.getNumber())
-					+ Integer.parseInt(stuff.getNumber())));
+		Order order_old = orderService.selectByPrimaryKey(order.getId());
+		// 当前库存数量
+		int number = Integer.parseInt(stuff.getNumber());
+		if (order_old.getState() == 1) {// 购入订单
+			// 当前库存数量减去上次订单数量
+			number -= Integer.parseInt(order_old.getNumber());
 		} else {// 卖出、退货订单
-			// 材料表中库存减
-			stuff.setNumber(String.valueOf(Integer.parseInt(stuff.getNumber())
-					- Integer.parseInt(order.getNumber())));
+			// 当前库存数量加上上次订单数量
+			number += Integer.parseInt(order_old.getNumber());
 		}
+		if (order.getState() == 1) {// 购入订单
+			// 对家电库存表中的库存进行增加
+			number += Integer.parseInt(order.getNumber());
+		} else {// 卖出、退货订单
+			// 家电库存表中库存减
+			number -= Integer.parseInt(order.getNumber());
+		}
+		stuff.setNumber(String.valueOf(number));
 		// 更新库存信息
 		stuffService.updateByPrimaryKeySelective(stuff);
 		if (orderService.updateByPrimaryKeySelective(order) > 0) {

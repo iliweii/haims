@@ -39,6 +39,10 @@ public class IndexController {
 	public String order_detail() {
 		return "order_detail";
 	}
+	@RequestMapping("/page/order_list")
+	public String order_list() {
+		return "order_list";
+	}
 	@RequestMapping("/page/order_list_admin")
 	public String order_list_admin() {
 		return "order_list_admin";
