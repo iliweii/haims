@@ -2,83 +2,82 @@
 </head>
 
 <div class="row" xmlns:th="http://www.thymeleaf.org">
-	<div class="col-md-12">
-		<div class="card">
-			<form id="allInputsFormValidation" class="form-horizontal" 
-				method="post" novalidate="">
-				<div class="content">
-					<legend>修改分类信息</legend>
-					<input type="hidden" name="id" th:value="${type.id }" />
-					<input type="hidden" name="state" th:value="${type.state }" />
-					<input type="hidden" name="parentId" th:value="${type.parentId }" />
-					<input type="hidden" name="tLevel" th:value="${type.tLevel }" />
-					<fieldset>
-						<div class="form-group">
-							<label class="col-sm-4 control-label">分类名称<star>*</star></label>
-							<div class="col-sm-6">
-								<input class="form-control" type="text" name="type" th:value="${type.type }"
-									required="required" />
-							</div>
-							<!-- <div class="col-sm-4"><code>required</code></div>-->
-						</div>
-					</fieldset>
+    <div class="col-md-12">
+        <div class="card">
+            <form id="allInputsFormValidation" class="form-horizontal"
+                  method="post" novalidate="">
+                <div class="content">
+                    <legend>修改分类信息</legend>
+                    <input type="hidden" name="id" th:value="${type.id }"/>
+                    <input type="hidden" name="state" th:value="${type.state }"/>
+                    <input type="hidden" name="parentId" th:value="${type.parentId }"/>
+                    <input type="hidden" name="tLevel" th:value="${type.tLevel }"/>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">分类名称
+                                <star>*</star>
+                            </label>
+                            <div class="col-sm-6">
+                                <input class="form-control" type="text" name="type" th:value="${type.type }"
+                                       required="required"/>
+                            </div>
+                            <!-- <div class="col-sm-4"><code>required</code></div>-->
+                        </div>
+                    </fieldset>
 
-				</div>
-				<div class="footer text-center">
-					<button type="submit" class="btn btn-info btn-fill">修改</button>
-					<button type="reset" class="btn btn-info btn-fill">重置</button>
-				</div>
-			</form>
+                </div>
+                <div class="footer text-center">
+                    <button type="submit" class="btn btn-info btn-fill">修改</button>
+                    <button type="reset" class="btn btn-info btn-fill">重置</button>
+                </div>
+            </form>
 
-		</div>
-		<!--  end card  -->
-	</div>
-	<!-- end col-md-12 -->
+        </div>
+        <!--  end card  -->
+    </div>
+    <!-- end col-md-12 -->
 </div>
 <!-- end row -->
-
 
 
 <script type="text/javascript">
 
 
-$().ready(function(){
-	
-	
-	
-    //重写验证规则，设置返回中文
-    $.validator.messages.required = jQuery.validator.format("请填写必填字段");
-    $.validator.messages.equalTo = jQuery.validator.format("两次密码输入不一致");
-    // 手机号码验证
-    jQuery.validator.addMethod("isMobile", function(value, element) {
-        var length = value.length;
-        return (length == 11 && /^(([0-9]{1})+\d{9})$/.test(value));
-    }, "请正确填写您的手机号码。");
-    
-	
-    $('#allInputsFormValidation').validate({
-    	submitHandler: function(form) { //通过之后回调
-    		//进行ajax传值
-    		$.ajax({
-    			data:$("#allInputsFormValidation").serialize(),
-            	dataType:"text",
-        		type:"post",
-        		url:"/type/typeupdate",
-        		success:function(data){
-        			console.log(data);
-        			if(data == "1"){
-        				window.location.href = "/page/type_list";
-        			}else{
-        				alert(data);
-        			}
-        		},
-    		});
-    	},
-    });
-	
-    
-});
+    $().ready(function () {
 
+
+        //重写验证规则，设置返回中文
+        $.validator.messages.required = jQuery.validator.format("请填写必填字段");
+        $.validator.messages.equalTo = jQuery.validator.format("两次密码输入不一致");
+        // 手机号码验证
+        jQuery.validator.addMethod("isMobile", function (value, element) {
+            var length = value.length;
+            return (length == 11 && /^(([0-9]{1})+\d{9})$/.test(value));
+        }, "请正确填写您的手机号码。");
+
+
+        $('#allInputsFormValidation').validate({
+            submitHandler: function (form) { //通过之后回调
+                //进行ajax传值
+                $.ajax({
+                    data: $("#allInputsFormValidation").serialize(),
+                    dataType: "text",
+                    type: "post",
+                    url: "/type/typeupdate",
+                    success: function (data) {
+                        console.log(data);
+                        if (data == "1") {
+                            window.location.href = "/page/type_list";
+                        } else {
+                            swal("糟糕！", data, "error");
+                        }
+                    },
+                });
+            },
+        });
+
+
+    });
 
 
 </script>

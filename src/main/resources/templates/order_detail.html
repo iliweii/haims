@@ -7,15 +7,17 @@
             <form id="allInputsFormValidation" class="form-horizontal" novalidate="">
                 <div class="content">
                     <legend>查看订单信息</legend>
-					<input type="hidden" name="id" th:value="${order.id }" />
-					<input type="hidden" name="userId" th:value="${order.userId }" />
-                    <input type="hidden" name="isDelete" th:value="${order.isDelete }" />
-                    <input type="hidden" name="typeIdTemp" th:value="${order.typeId }" />
-                    <input type="hidden" name="supplierIdTemp" th:value="${order.supplierId }" />
-                    <input type="hidden" name="stuffIdTemp" th:value="${order.stuffId }" />
+                    <input type="hidden" name="id" th:value="${order.id }"/>
+                    <input type="hidden" name="userId" th:value="${order.userId }"/>
+                    <input type="hidden" name="isDelete" th:value="${order.isDelete }"/>
+                    <input type="hidden" name="typeIdTemp" th:value="${order.typeId }"/>
+                    <input type="hidden" name="supplierIdTemp" th:value="${order.supplierId }"/>
+                    <input type="hidden" name="stuffIdTemp" th:value="${order.stuffId }"/>
                     <fieldset>
                         <div class="form-group">
-                            <label class="col-sm-4 control-label">订单名称<star>*</star></label>
+                            <label class="col-sm-4 control-label">订单名称
+                                <star>*</star>
+                            </label>
                             <div class="col-sm-6">
                                 <input class="form-control"
                                        order="text"
@@ -26,53 +28,67 @@
                             </div>
                         </div>
                     </fieldset>
-                    
+
                     <fieldset>
                         <div class="form-group">
-                            <label class="col-sm-4 control-label">订单类别<star>*</star></label>
+                            <label class="col-sm-4 control-label">订单类别
+                                <star>*</star>
+                            </label>
                             <div class="col-sm-6">
-                                <select class="form-control selectpicker"  data-title="请选择" name="state" id="state" required="required">
-                                	<option value="1" th:if="${order.state eq 1 }" selected="selected" >购入订单</option>
-                                	<option value="2" th:if="${order.state eq 2 }" selected="selected" >卖出订单</option>
-                                	<option value="3" th:if="${order.state eq 3 }" selected="selected" >退货订单</option>
+                                <select class="form-control selectpicker" data-title="请选择" name="state" id="state"
+                                        required="required">
+                                    <option value="1" th:if="${order.state eq 1 }" selected="selected">购入订单</option>
+                                    <option value="2" th:if="${order.state eq 2 }" selected="selected">卖出订单</option>
+                                    <option value="3" th:if="${order.state eq 3 }" selected="selected">退货订单</option>
                                 </select>
                             </div>
                         </div>
                     </fieldset>
-                    
+
                     <fieldset>
-                    	<div class="form-group">
-                            <label class="col-sm-4 control-label">选择家电类别<star>*</star></label>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">选择家电类别
+                                <star>*</star>
+                            </label>
                             <div class="col-sm-6">
-                             	<select class="form-control selectpicker"  data-title="请选择"  id="typeId" name="typeId" required="required">
+                                <select class="form-control selectpicker" data-title="请选择" id="typeId" name="typeId"
+                                        required="required">
                                 </select>
                             </div>
                         </div>
                     </fieldset>
-                    
+
                     <fieldset>
-                    	<div class="form-group">
-                            <label class="col-sm-4 control-label">选择供货商<star>*</star></label>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">选择供货商
+                                <star>*</star>
+                            </label>
                             <div class="col-sm-6">
-                             	<select class="form-control selectpicker"  data-title="请选择"  id="supplierId" name="supplierId" required="required" >
+                                <select class="form-control selectpicker" data-title="请选择" id="supplierId"
+                                        name="supplierId" required="required">
                                 </select>
                             </div>
                         </div>
                     </fieldset>
-                    
+
                     <fieldset>
-                    	<div class="form-group">
-                            <label class="col-sm-4 control-label">选择商品<star>*</star></label>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">选择商品
+                                <star>*</star>
+                            </label>
                             <div class="col-sm-6">
-                             	<select class="form-control selectpicker"  data-title="请选择"  id="stuffId" name="stuffId" required="required">
+                                <select class="form-control selectpicker" data-title="请选择" id="stuffId" name="stuffId"
+                                        required="required">
                                 </select>
                             </div>
                         </div>
                     </fieldset>
-                    
-					<fieldset>
-                    	<div class="form-group">
-                    		<label class="col-sm-4 control-label">数量<star>*</star></label>
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">数量
+                                <star>*</star>
+                            </label>
                             <div class="col-sm-2">
                                 <input class="form-control"
                                        order="text"
@@ -84,7 +100,9 @@
                                 />
                                 <label>库存数量：<span id="kucunNum"></span></label>
                             </div>
-                            <label class="col-sm-2 control-label">金额<star>*</star></label>
+                            <label class="col-sm-2 control-label">金额
+                                <star>*</star>
+                            </label>
                             <div class="col-sm-2">
                                 <input class="form-control"
                                        order="text"
@@ -98,7 +116,7 @@
                         </div>
                     </fieldset>
 
-				</div>
+                </div>
                 <div class="footer text-center">
                     <button order="button" id="back" class="btn btn-info btn-fill">返回</button>
                 </div>
@@ -111,15 +129,15 @@
 <script order="text/javascript">
 
 
-    $().ready(function(){
-    	//返回至list
-    	$("#back").click(function(){
-            window.location.href="javascript:history.go(-1)"
-    	});
-    	
-    	
-    	//类别
-    	$.ajax({
+    $().ready(function () {
+        //返回至list
+        $("#back").click(function () {
+            window.location.href = "javascript:history.go(-1)"
+        });
+
+
+        //类别
+        $.ajax({
             url: "/type/typelist",
             type: "post",
             dataType: "json",
@@ -127,19 +145,18 @@
                 $("#typeId").html('');//移除原元素
                 if (data.length > 0) {
                     $.each(data, function (i) {
-                    	if($("input[name=typeIdTemp]").val() == data[i].id){
-                    		$("<option value='" + data[i].id + "' selected='selected' >" + data[i].type + "</option>").appendTo("#typeId");//构造html元素并插入
-                    	}
+                        if ($("input[name=typeIdTemp]").val() == data[i].id) {
+                            $("<option value='" + data[i].id + "' selected='selected' >" + data[i].type + "</option>").appendTo("#typeId");//构造html元素并插入
+                        }
                     });
                     $('#typeId').selectpicker('refresh');
-                }
-                else {
+                } else {
                     //$.MsgShow("无供货商", "fail");
                 }
             }
         });
-    	$.ajax({
-    		data:{"typeId":$("input[name=typeIdTemp]").val()},
+        $.ajax({
+            data: {"typeId": $("input[name=typeIdTemp]").val()},
             url: "/supplier/findByType",
             type: "post",
             dataType: "json",
@@ -147,21 +164,20 @@
                 $("#supplierId").html('');//移除原元素
                 if (data.length > 0) {
                     $.each(data, function (i) {
-                    	if($("input[name=supplierIdTemp]").val() == data[i].supplierId){
-                    		$("<option value='" + data[i].supplierId + "' selected='selected' >" + data[i].supplierName + "</option>").appendTo("#supplierId");//构造html元素并插入
-                    	}
-                        
+                        if ($("input[name=supplierIdTemp]").val() == data[i].supplierId) {
+                            $("<option value='" + data[i].supplierId + "' selected='selected' >" + data[i].supplierName + "</option>").appendTo("#supplierId");//构造html元素并插入
+                        }
+
                     });
                     $('#supplierId').selectpicker('refresh');
-                }
-                else {
+                } else {
                     //$.MsgShow(data.Message, "fail");
                 }
             }
         });
-    	//stuffId 根据type渲染select商品信息
-    	$.ajax({
-    		data:{"typeId":$("input[name=typeIdTemp]").val()},
+        //stuffId 根据type渲染select商品信息
+        $.ajax({
+            data: {"typeId": $("input[name=typeIdTemp]").val()},
             url: "/stuff/findByType",
             type: "post",
             dataType: "json",
@@ -169,22 +185,21 @@
                 $("#stuffId").html('');//移除原元素
                 if (data.length > 0) {
                     $.each(data, function (i) {
-                    	if($("input[name=stuffIdTemp]").val() == data[i].id){
-                    		 $("<option value='" + data[i].id + "' selected='selected' >" + data[i].name + "</option>").appendTo("#stuffId");//构造html元素并插入
-                    	}
-                       
+                        if ($("input[name=stuffIdTemp]").val() == data[i].id) {
+                            $("<option value='" + data[i].id + "' selected='selected' >" + data[i].name + "</option>").appendTo("#stuffId");//构造html元素并插入
+                        }
+
                     });
                     $('#stuffId').selectpicker('refresh');
-                }
-                else {
-                	
+                } else {
+
                     //$.MsgShow(data.Message, "fail");
                 }
             }
         });
-    	//初始化商品库存
-    	$.ajax({
-    		data:{"id":$("input[name=stuffIdTemp]").val()},
+        //初始化商品库存
+        $.ajax({
+            data: {"id": $("input[name=stuffIdTemp]").val()},
             url: "/stuff/findByIds",
             type: "post",
             dataType: "json",
@@ -194,61 +209,57 @@
                 kucunNum = data.number;
             }
         });
-    
-    	
-    	
+
+
         //重写验证规则，设置返回中文
         $.validator.messages.required = jQuery.validator.format("请填写必填字段");
         $.validator.messages.equalTo = jQuery.validator.format("两次密码输入不一致");
         // 手机号码验证
-        jQuery.validator.addMethod("isMobile", function(value, element) {
+        jQuery.validator.addMethod("isMobile", function (value, element) {
             var length = value.length;
             return (length == 11 && /^((1[0-9]{1})+\d{9})$/.test(value));
         }, "请正确填写您的手机号码。");
         // 金额验证规则
-        jQuery.validator.addMethod("isMoney", function(value, element) {
+        jQuery.validator.addMethod("isMoney", function (value, element) {
             return (/(^[1-9](\d+)?(\.\d{1,2})?$)|(^\d\.\d{1,2}$)/.test(value));
         }, "请输入正确的金额（大于0且最多含两位小数）");
-     	// 数字匹配规则
-        jQuery.validator.addMethod("isNum", function(value, element) {
-            return ( /^[1-9]\d*|0$/.test(value));
+        // 数字匹配规则
+        jQuery.validator.addMethod("isNum", function (value, element) {
+            return (/^[1-9]\d*|0$/.test(value));
         }, "请正确的数量信息。");
         //库存多少规则
-        jQuery.validator.addMethod("isCompare", function(value, element) {
-        	if($("#state option:selected").val() != 1 ){
-        		return !(parseInt(value) > parseInt(kucunNum));
-        	}
+        jQuery.validator.addMethod("isCompare", function (value, element) {
+            if ($("#state option:selected").val() != 1) {
+                return !(parseInt(value) > parseInt(kucunNum));
+            }
             return (/^[1-9]\d*|0$/.test(value));
         }, "卖出及退货数量请小于库存");
-     	
-        $('#allInputsFormValidation').validate({
-        	submitHandler: function(form) { //通过之后回调
-        		//进行ajax传值
-        		$.ajax({
-        			data:$("#allInputsFormValidation").serialize(),
-                	dataType:"text",
-            		order:"post",
-            		url:"/order/orderupdate",
-            		success:function(data){
-            			if(data == "1"){
-            				window.location.href = "/page/order_list";
-            			}else{
-            				alert(data);
-            			}
-            		},
-        		});
-        	},
-        });
-        
-		
-        
 
-        
+        $('#allInputsFormValidation').validate({
+            submitHandler: function (form) { //通过之后回调
+                //进行ajax传值
+                $.ajax({
+                    data: $("#allInputsFormValidation").serialize(),
+                    dataType: "text",
+                    order: "post",
+                    url: "/order/orderupdate",
+                    success: function (data) {
+                        if (data == "1") {
+                            window.location.href = "/page/order_list";
+                        } else {
+                            alert(data);
+                            swal("糟糕！", data, "error");
+                        }
+                    },
+                });
+            },
+        });
+
+
     });
 
 
 </script>
-
 
 
 </html>

@@ -1,175 +1,178 @@
 <head th:replace="common :: common_head(~{},~{style})" xmlns:th="http://www.thymeleaf.org">
-	<style>
-		.table th,.table td{ text-align:center;vertical-align:middle!important;}
-		.fixed-table-body{
-			height:53% !important;
-			overflow: auto;
-		}
-	</style>
+    <style>
+        .table th, .table td {
+            text-align: center;
+            vertical-align: middle !important;
+        }
+
+        .fixed-table-body {
+            height: 53% !important;
+            overflow: auto;
+        }
+    </style>
 </head>
 
 <div class="row">
-	<div class="col-md-12">
-		<div class="card">
+    <div class="col-md-12">
+        <div class="card">
 
-			<div class="toolbar">
-				<!--        Here you can write extra buttons/actions for the toolbar              -->
-				<button id="add" class="btn btn-secondary">增加订单</button>
-				<button id="remove" class="btn btn-secondary">删除订单</button>
-			</div>
+            <div class="toolbar">
+                <!--        Here you can write extra buttons/actions for the toolbar              -->
+                <button id="add" class="btn btn-secondary">增加订单</button>
+                <button id="remove" class="btn btn-secondary">删除订单</button>
+            </div>
 
-			<table id="bootstrap-table" class="table" data-url="/order/orderlistadmin">
-				<thead>
-					<th data-field="checked" data-checkbox="true"></th>
-					<th data-field="num" data-formatter="numFormatter">编号</th>
-					<th data-field="name" data-sortable="true">订单名称</th>
-					<th data-field="typeName" data-sortable="true">家电类别</th>
-					<th data-field="supplierName" data-sortable="true">供货商</th>
-					<th data-field="stuffName" data-sortable="true">家电</th>
-					
-					<th data-field="state" data-sortable="true" data-formatter="statesFormatter">订单类别</th>
-					<th data-field="number" data-sortable="true">数量</th>
-					<th data-field="money" data-sortable="true">金额（元）</th>
-					
-					<th data-field="time" data-sortable="true">操作时间</th>
-					<th data-field="userName" data-sortable="true">操作人</th>
-					
-					<th data-field="actions" class="td-actions text-right"
-						data-events="operateEvents" data-formatter="operateFormatter">操作</th>
-				</thead>
-				<tbody>
+            <table id="bootstrap-table" class="table" data-url="/order/orderlistadmin">
+                <thead>
+                <th data-field="checked" data-checkbox="true"></th>
+                <th data-field="num" data-formatter="numFormatter">编号</th>
+                <th data-field="name" data-sortable="true">订单名称</th>
+                <th data-field="typeName" data-sortable="true">家电类别</th>
+                <th data-field="supplierName" data-sortable="true">供货商</th>
+                <th data-field="stuffName" data-sortable="true">家电</th>
 
-				</tbody>
-			</table>
-		</div>
-		<!--  end card  -->
-		<div class="card">
-			<div id="chartContainer" style="height: 370px; width: 100%;"></div>
-		</div>
-		<!--  end card  -->
-	</div>
-	<!-- end col-md-12 -->
+                <th data-field="state" data-sortable="true" data-formatter="statesFormatter">订单类别</th>
+                <th data-field="number" data-sortable="true">数量</th>
+                <th data-field="money" data-sortable="true">金额（元）</th>
+
+                <th data-field="time" data-sortable="true">操作时间</th>
+                <th data-field="userName" data-sortable="true">操作人</th>
+
+                <th data-field="actions" class="td-actions text-right"
+                    data-events="operateEvents" data-formatter="operateFormatter">操作
+                </th>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+        <!--  end card  -->
+        <div class="card">
+            <div id="chartContainer" style="height: 370px; width: 100%;"></div>
+        </div>
+        <!--  end card  -->
+    </div>
+    <!-- end col-md-12 -->
 </div>
 <!-- end row -->
-
-
 
 
 <script type="text/javascript">
     var $table = $('#bootstrap-table');
 
-    function numFormatter(value, row, index){
-    	return index+1;
+    function numFormatter(value, row, index) {
+        return index + 1;
     }
-	
-    function statesFormatter(value, row, index){
-    	if(value == 1){
-    		return "入库";
-    	}else if(value == 2){
-    		return "销售";
-    	}else{
-    		return "退货";
-    	}
+
+    function statesFormatter(value, row, index) {
+        if (value == 1) {
+            return "入库";
+        } else if (value == 2) {
+            return "销售";
+        } else {
+            return "退货";
+        }
     }
-    
+
     function operateFormatter(value, row, index) {
         return [
             '<a rel="tooltip" title="查看" class="btn btn-simple btn-warning btn-icon table-action edit" href="javascript:void(0)">',
             '<i class="fa fa-eye"></i>',
             '</a>',
-			'<a rel="tooltip" title="修改" class="btn btn-simple btn-warning btn-icon table-action edit" href="javascript:void(0)">',
-			'<i class="fa fa-edit"></i>',
-			'</a>',
+            '<a rel="tooltip" title="修改" class="btn btn-simple btn-warning btn-icon table-action edit" href="javascript:void(0)">',
+            '<i class="fa fa-edit"></i>',
+            '</a>',
             '<a rel="tooltip" title="删除" class="btn btn-simple btn-danger btn-icon table-action remove" href="javascript:void(0)">',
             '<i class="fa fa-remove"></i>',
             '</a>'
         ].join('');
     }
 
-    $().ready(function(){
-    	$.ajax({
-    		type: "get",
-    		url: "/order/orderlist",
-    		success: function(e) {
-    			let orders = JSON.parse(e)
-    			let orderPoints = [], orderPoints1 = [], orderPoints2 = [], orderPoints3 = []
-    			for (let i = 0; i < orders.length; i++) {
-    				orderPoints[i] = { x: new Date(orders[i].time), y: Number.parseInt(orders[i].money) }
-    				if (orders[i].state == 2)
-    					orderPoints1.push(orderPoints[i])
-    				else if (orders[i].state == 1)
-    					orderPoints2.push(orderPoints[i])
-    				else
-    					orderPoints3.push(orderPoints[i])
-    			}
-    			var chart = new CanvasJS.Chart("chartContainer", {
-    				animationEnabled: true,
-    				theme: "light2",
-    				title:{
-    					text: "订单分析图"
-    				},
-    				axisX:{
-    					valueFormatString: "DD MMM",
-    					crosshair: {
-    						enabled: true,
-    						snapToDataPoint: true
-    					}
-    				},
-    				axisY: {
-    					title: "金额",
-    					includeZero: true,
-    					crosshair: {
-    						enabled: true
-    					}
-    				},
-    				toolTip:{
-    					shared:true
-    				},  
-    				legend:{
-    					cursor:"pointer",
-    					verticalAlign: "bottom",
-    					horizontalAlign: "left",
-    					dockInsidePlotArea: true,
-    					itemclick: toogleDataSeries
-    				},
-    				data: [{
-    					type: "line",
-    					showInLegend: true,
-    					name: "卖出",
-    					markerType: "square",
-    					xValueFormatString: "DD MMM, YYYY",
-    					dataPoints: orderPoints1
-    				},
-    				{
-    					type: "line",
-    					showInLegend: true,
-    					name: "购入",
-    					lineDashType: "square", //"dash",
-    					dataPoints: orderPoints2
-    				},
-    				{
-    					type: "line",
-    					showInLegend: true,
-    					name: "退货",
-    					lineDashType: "square", //"dash",
-    					dataPoints: orderPoints3
-    				}]
-    			});
-    			chart.render();
+    $().ready(function () {
+        $.ajax({
+            type: "get",
+            url: "/order/orderlist",
+            success: function (e) {
+                let orders = JSON.parse(e)
+                let orderPoints = [], orderPoints1 = [], orderPoints2 = [], orderPoints3 = []
+                for (let i = 0; i < orders.length; i++) {
+                    orderPoints[i] = {x: new Date(orders[i].time), y: Number.parseInt(orders[i].money)}
+                    if (orders[i].state == 2)
+                        orderPoints1.push(orderPoints[i])
+                    else if (orders[i].state == 1)
+                        orderPoints2.push(orderPoints[i])
+                    else
+                        orderPoints3.push(orderPoints[i])
+                }
+                var chart = new CanvasJS.Chart("chartContainer", {
+                    animationEnabled: true,
+                    theme: "light2",
+                    title: {
+                        text: "订单分析图"
+                    },
+                    axisX: {
+                        valueFormatString: "DD MMM",
+                        crosshair: {
+                            enabled: true,
+                            snapToDataPoint: true
+                        }
+                    },
+                    axisY: {
+                        title: "金额",
+                        includeZero: true,
+                        crosshair: {
+                            enabled: true
+                        }
+                    },
+                    toolTip: {
+                        shared: true
+                    },
+                    legend: {
+                        cursor: "pointer",
+                        verticalAlign: "bottom",
+                        horizontalAlign: "left",
+                        dockInsidePlotArea: true,
+                        itemclick: toogleDataSeries
+                    },
+                    data: [{
+                        type: "line",
+                        showInLegend: true,
+                        name: "卖出",
+                        markerType: "square",
+                        xValueFormatString: "DD MMM, YYYY",
+                        dataPoints: orderPoints1
+                    },
+                        {
+                            type: "line",
+                            showInLegend: true,
+                            name: "购入",
+                            lineDashType: "square", //"dash",
+                            dataPoints: orderPoints2
+                        },
+                        {
+                            type: "line",
+                            showInLegend: true,
+                            name: "退货",
+                            lineDashType: "square", //"dash",
+                            dataPoints: orderPoints3
+                        }]
+                });
+                chart.render();
 
-    			function toogleDataSeries(e){
-    				if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-    					e.dataSeries.visible = false;
-    				} else{
-    					e.dataSeries.visible = true;
-    				}
-    				chart.render();
-    			}
-    		}
-    	})
+                function toogleDataSeries(e) {
+                    if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                        e.dataSeries.visible = false;
+                    } else {
+                        e.dataSeries.visible = true;
+                    }
+                    chart.render();
+                }
+            }
+        })
         window.operateEvents = {
             'click .edit': function (e, value, row, index) {
-				location.href = "/order/findById?id="+row.id;
+                location.href = "/order/findById?id=" + row.id;
             },
             'click .remove': function (e, value, row, index) {
                 //console.log(row);
@@ -178,13 +181,17 @@
                     values: [row.id]
                 });
                 $.ajax({
-                	dataType:"text",
-                	url: "/order/deteteById?flag=2&&id=" + [row.id],
-                	type:"post",
-                	success: function(data){
-                		alert(data);
-                		$table.bootstrapTable( "refresh");
-                	}
+                    dataType: "text",
+                    url: "/order/deteteById?flag=2&&id=" + [row.id],
+                    type: "post",
+                    success: function (data) {
+                        if (data == "删除成功") {
+                            swal("成功！", data, "success");
+                        } else {
+                            swal("糟糕！", data, "error");
+                        }
+                        $table.bootstrapTable("refresh");
+                    }
                 });
             }
         };
@@ -193,19 +200,23 @@
             var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
                 return row.id;
             });
-            if(ids != ""){
-            	$.ajax({
-                	//data:{"ids":ids},
-                	dataType:"text",
-                	url:"/order/deteteByIds?flag=2&&ids=" + ids ,
-                	type:"post",
-                	success: function(data){
-                		alert(data);
-                		$table.bootstrapTable( "refresh");
-                	}
+            if (ids != "") {
+                $.ajax({
+                    //data:{"ids":ids},
+                    dataType: "text",
+                    url: "/order/deteteByIds?flag=2&&ids=" + ids,
+                    type: "post",
+                    success: function (data) {
+                        if (data == "删除成功") {
+                            swal("成功！", data, "success");
+                        } else {
+                            swal("糟糕！", data, "error");
+                        }
+                        $table.bootstrapTable("refresh");
+                    }
                 });
             }
-            
+
             $table.bootstrapTable('remove', {
                 field: 'id',
                 values: ids,
@@ -213,12 +224,12 @@
         });
         /**增加方法*/
         $("#add").click(function () {
-            window.location.href="/page/order_add";
+            window.location.href = "/page/order_add";
         });
 
         $table.bootstrapTable({
             undefinedText: 'N/A',//未定义文本
-           // url: dat ,
+            // url: dat ,
             toolbar: ".toolbar",//工具按钮用哪个容器
             clickToSelect: true,
             showRefresh: true,
@@ -230,11 +241,11 @@
             searchPlaceholder: '模糊搜索',
             pageSize: 8,
             clickToSelect: false,
-            pageList: [8,10,25,50,100],
-            formatShowingRows: function(pageFrom, pageTo, totalRows){
+            pageList: [8, 10, 25, 50, 100],
+            formatShowingRows: function (pageFrom, pageTo, totalRows) {
                 //do nothing here, we don't want to show the text "showing x of y from..."
             },
-            formatRecordsPerPage: function(pageNumber){
+            formatRecordsPerPage: function (pageNumber) {
                 return pageNumber + "条/页";
             },
             icons: {

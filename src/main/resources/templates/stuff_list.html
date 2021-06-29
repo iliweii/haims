@@ -161,7 +161,11 @@
                 	url: "/stuff/deteteById?id=" + [row.id],
                 	type:"post",
                 	success: function(data){
-                		alert(data);
+						if (data == "删除成功") {
+							swal("成功！", data, "success");
+						} else {
+							swal("糟糕！", data, "error");
+						}
                 		$table.bootstrapTable( "refresh");
                 	}
                 });
@@ -179,7 +183,11 @@
                 	url:"/stuff/deteteByIds?ids=" + ids ,
                 	type:"post",
                 	success: function(data){
-                		alert(data);
+						if (data == "删除成功") {
+							swal("成功！", data, "success");
+						} else {
+							swal("糟糕！", data, "error");
+						}
                 		$table.bootstrapTable( "refresh");
                 	}
                 });
