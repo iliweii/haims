@@ -1,9 +1,212 @@
 <head th:replace="common :: common_head(~{},~{})" xmlns:th="http://www.thymeleaf.org">
 
-
-
 </head>
 <body>
+<h3>家电类型分析饼状图</h3>
+<div class="card">
+    <div style="display: flex">
+        <div id="typeChart1" style="height: 300px; width: 60%;"></div>
+        <div>
+            <div id="typeChart2" style="height: 150px;"></div>
+            <div id="typeChart3" style="height: 150px;"></div>
+        </div>
+    </div>
+</div>
+<h3>家电类型分析柱状图</h3>
+<div class="card">
+    <div style="display: flex">
+        <div id="typeChart4" style="height: 300px; width: 60%;"></div>
+        <div>
+            <div id="typeChart5" style="height: 150px;"></div>
+            <div id="typeChart6" style="height: 150px;"></div>
+        </div>
+    </div>
+</div>
+<!--  end card  -->
+<script>
 
+    $().ready(function () {
+        $.ajax({
+            dataType: "text",
+            url: "/order/orderlistadmin",
+            type: "get",
+            success: function (e) {
+                let orders = JSON.parse(e)
+                var typeArr1 = []
+                var typeArr2 = []
+                var typeArr3 = []
+                for (let i = 0; i < orders.length; i++) {
+                    let order = orders[i];
+                    let typeName = order.typeName;
+                    let number = Number.parseInt(order.number)
+                    let index = isIncloud(typeArr1, typeName)
+                    let index2 = isIncloud(typeArr2, typeName)
+                    let index3 = isIncloud(typeArr3, typeName)
+                    if (index == -1) {
+                        let obj = {
+                            name: typeName,
+                            num: number
+                        }
+                        typeArr1.push(obj)
+                    } else {
+                        typeArr1[index].num += number
+                    }
+                    if (order.state == 1) {// 入库
+                        if (index2 == -1) {
+                            let obj = {
+                                name: typeName,
+                                num: number
+                            }
+                            typeArr2.push(obj)
+                        } else {
+                            typeArr2[index].num += number
+                        }
+                    } else if (order.state == 2) { // 销售
+                        if (index3 == -1) {
+                            let obj = {
+                                name: typeName,
+                                num: number
+                            }
+                            typeArr3.push(obj)
+                        } else {
+                            typeArr3[index].num += number
+                        }
+                    }
+                }
+                let sum = 0, sum2 = 0, sum3 = 0;
+                for (let i = 0; i < typeArr1.length; i++) {
+                    sum += typeArr1[i].num
+                }
+                for (let i = 0; i < typeArr2.length; i++) {
+                    sum2 += typeArr2[i].num
+                }
+                for (let i = 0; i < typeArr3.length; i++) {
+                    sum3 += typeArr3[i].num
+                }
+
+                for (let i = 0; i < typeArr1.length; i++) {
+                    typeArr1[i].label = typeArr1[i].name
+                    typeArr1[i].y = typeArr1[i].num
+                    typeArr1[i].z = (typeArr1[i].num / sum * 100).toFixed(2)
+                }
+                for (let i = 0; i < typeArr2.length; i++) {
+                    typeArr2[i].label = typeArr2[i].name
+                    typeArr2[i].y = typeArr2[i].num
+                    typeArr2[i].z = (typeArr2[i].num / sum2 * 100).toFixed(2)
+                }
+                for (let i = 0; i < typeArr3.length; i++) {
+                    typeArr3[i].label = typeArr3[i].name
+                    typeArr3[i].y = typeArr3[i].num
+                    typeArr3[i].z = (typeArr3[i].num / sum3 * 100).toFixed(2)
+                }
+                var chart = new CanvasJS.Chart("typeChart1", {
+                    theme: "light2",
+                    exportEnabled: true,
+                    animationEnabled: true,
+                    title: {
+                        text: "家电类型入库销售总量分析图"
+                    },
+                    data: [{
+                        type: "pie",
+                        startAngle: 25,
+                        toolTipContent: "<b>{label}</b>: {z}%",
+                        showInLegend: "true",
+                        legendText: "{label}",
+                        indexLabelFontSize: 16,
+                        indexLabel: "{label} - {z}%",
+                        dataPoints: typeArr1
+                    }]
+                });
+                var chart2 = new CanvasJS.Chart("typeChart2", {
+                    theme: "light2",
+                    exportEnabled: true,
+                    animationEnabled: true,
+                    title: {
+                        text: "入库量分析图"
+                    },
+                    data: [{
+                        type: "pie",
+                        startAngle: 25,
+                        toolTipContent: "<b>{name}</b>: {z}%",
+                        showInLegend: "true",
+                        legendText: "{name}",
+                        indexLabelFontSize: 16,
+                        indexLabel: "{name} - {z}%",
+                        dataPoints: typeArr2
+                    }]
+                });
+                var chart3 = new CanvasJS.Chart("typeChart3", {
+                    theme: "light2",
+                    exportEnabled: true,
+                    animationEnabled: true,
+                    title: {
+                        text: "销售量分析图"
+                    },
+                    data: [{
+                        type: "pie",
+                        startAngle: 25,
+                        toolTipContent: "<b>{name}</b>: {z}%",
+                        showInLegend: "true",
+                        legendText: "{name}",
+                        indexLabelFontSize: 16,
+                        indexLabel: "{name} - {z}%",
+                        dataPoints: typeArr3
+                    }]
+                });
+                var chart4 = new CanvasJS.Chart("typeChart4", {
+                    theme: "light1",
+                    animationEnabled: true,
+                    title: {
+                        text: "家电类型入库销售总量分析柱状图"
+                    },
+                    data: [{
+                        type: "column",
+                        dataPoints: typeArr1
+                    }]
+                });
+                var chart5 = new CanvasJS.Chart("typeChart5", {
+                    theme: "light1",
+                    animationEnabled: true,
+                    title: {
+                        text: "入库总量分析柱状图"
+                    },
+                    data: [{
+                        type: "column",
+                        dataPoints: typeArr2
+                    }]
+                });
+                var chart6 = new CanvasJS.Chart("typeChart6", {
+                    theme: "light1",
+                    animationEnabled: true,
+                    title: {
+                        text: "销售总量分析柱状图"
+                    },
+                    data: [{
+                        type: "column",
+                        dataPoints: typeArr3
+                    }]
+                });
+                chart.render();
+                chart2.render();
+                chart3.render();
+                chart4.render();
+                chart5.render();
+                chart6.render();
+            }
+
+        })
+
+        function isIncloud(arr, str) {
+            let flag = -1
+            for (let i = 0; i < arr.length; i++) {
+                if (arr[i].name == str) {
+                    flag = i
+                    break
+                }
+            }
+            return flag
+        }
+    })
+</script>
 </body>
 </html>

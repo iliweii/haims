@@ -1,9 +1,274 @@
 <head th:replace="common :: common_head(~{},~{})" xmlns:th="http://www.thymeleaf.org">
 
-
-
 </head>
 <body>
+<h3>家电库存总量分析图</h3>
+<div class="card">
+    <div style="display: flex">
+        <div id="stuffChart7" style="height: 400px; width: 50%;"></div>
+        <div>
+            <div id="stuffChart8" style="height: 400px; width: 50%;"></div>
+        </div>
+    </div>
+</div>
+<h3>家电库存交易量分析饼状图</h3>
+<div class="card">
+    <div style="display: flex">
+        <div id="stuffChart1" style="height: 400px; width: 60%;"></div>
+        <div>
+            <div id="stuffChart2" style="height: 200px;"></div>
+            <div id="stuffChart3" style="height: 200px;"></div>
+        </div>
+    </div>
+</div>
+<h3>家电库交易量存分析柱状图</h3>
+<div class="card">
+    <div style="display: flex">
+        <div id="stuffChart4" style="height: 400px; width: 60%;"></div>
+        <div>
+            <div id="stuffChart5" style="height: 200px;"></div>
+            <div id="stuffChart6" style="height: 200px;"></div>
+        </div>
+    </div>
+</div>
 
+<!--  end card  -->
+<script>
+
+    $().ready(function () {
+        $.ajax({
+            dataType: "text",
+            url: "/order/orderlistadmin",
+            type: "get",
+            success: function (e) {
+                let orders = JSON.parse(e)
+                var stuffArr1 = []
+                var stuffArr2 = []
+                var stuffArr3 = []
+                for (let i = 0; i < orders.length; i++) {
+                    let order = orders[i];
+                    let stuffName = order.stuffName;
+                    let number = Number.parseInt(order.number)
+                    let index = isIncloud(stuffArr1, stuffName)
+                    let index2 = isIncloud(stuffArr2, stuffName)
+                    let index3 = isIncloud(stuffArr3, stuffName)
+                    if (index == -1) {
+                        let obj = {
+                            name: stuffName,
+                            num: number
+                        }
+                        stuffArr1.push(obj)
+                    } else {
+                        stuffArr1[index].num += number
+                    }
+                    if (order.state == 1) {// 入库
+                        if (index2 == -1) {
+                            let obj = {
+                                name: stuffName,
+                                num: number
+                            }
+                            stuffArr2.push(obj)
+                        } else {
+                            stuffArr2[index].num += number
+                        }
+                    } else if (order.state == 2) { // 销售
+                        if (index3 == -1) {
+                            let obj = {
+                                name: stuffName,
+                                num: number
+                            }
+                            stuffArr3.push(obj)
+                        } else {
+                            stuffArr3[index].num += number
+                        }
+                    }
+                }
+                let sum = 0, sum2 = 0, sum3 = 0;
+                for (let i = 0; i < stuffArr1.length; i++) {
+                    sum += stuffArr1[i].num
+                }
+                for (let i = 0; i < stuffArr2.length; i++) {
+                    sum2 += stuffArr2[i].num
+                }
+                for (let i = 0; i < stuffArr3.length; i++) {
+                    sum3 += stuffArr3[i].num
+                }
+
+                for (let i = 0; i < stuffArr1.length; i++) {
+                    stuffArr1[i].label = stuffArr1[i].name
+                    stuffArr1[i].y = stuffArr1[i].num
+                    stuffArr1[i].z = (stuffArr1[i].num / sum * 100).toFixed(2)
+                }
+                for (let i = 0; i < stuffArr2.length; i++) {
+                    stuffArr2[i].label = stuffArr2[i].name
+                    stuffArr2[i].y = stuffArr2[i].num
+                    stuffArr2[i].z = (stuffArr2[i].num / sum2 * 100).toFixed(2)
+                }
+                for (let i = 0; i < stuffArr3.length; i++) {
+                    stuffArr3[i].label = stuffArr3[i].name
+                    stuffArr3[i].y = stuffArr3[i].num
+                    stuffArr3[i].z = (stuffArr3[i].num / sum3 * 100).toFixed(2)
+                }
+                var chart = new CanvasJS.Chart("stuffChart1", {
+                    theme: "light2",
+                    exportEnabled: true,
+                    animationEnabled: true,
+                    title: {
+                        text: "供应商入库销售总量分析图"
+                    },
+                    data: [{
+                        type: "pie",
+                        startAngle: 25,
+                        toolTipContent: "<b>{label}</b>: {z}%",
+                        showInLegend: "true",
+                        legendText: "{label}",
+                        indexLabelFontSize: 16,
+                        indexLabel: "{label} - {z}%",
+                        dataPoints: stuffArr1
+                    }]
+                });
+                var chart2 = new CanvasJS.Chart("stuffChart2", {
+                    theme: "light2",
+                    exportEnabled: true,
+                    animationEnabled: true,
+                    title: {
+                        text: "入库量分析图"
+                    },
+                    data: [{
+                        type: "pie",
+                        startAngle: 25,
+                        toolTipContent: "<b>{name}</b>: {z}%",
+                        showInLegend: "true",
+                        legendText: "{name}",
+                        indexLabelFontSize: 16,
+                        indexLabel: "{name} - {z}%",
+                        dataPoints: stuffArr2
+                    }]
+                });
+                var chart3 = new CanvasJS.Chart("stuffChart3", {
+                    theme: "light2",
+                    exportEnabled: true,
+                    animationEnabled: true,
+                    title: {
+                        text: "销售量分析图"
+                    },
+                    data: [{
+                        type: "pie",
+                        startAngle: 25,
+                        toolTipContent: "<b>{name}</b>: {z}%",
+                        showInLegend: "true",
+                        legendText: "{name}",
+                        indexLabelFontSize: 16,
+                        indexLabel: "{name} - {z}%",
+                        dataPoints: stuffArr3
+                    }]
+                });
+                var chart4 = new CanvasJS.Chart("stuffChart4", {
+                    theme: "light1",
+                    animationEnabled: true,
+                    title: {
+                        text: "家电库存入库销售总量分析柱状图"
+                    },
+                    data: [{
+                        type: "column",
+                        dataPoints: stuffArr1
+                    }]
+                });
+                var chart5 = new CanvasJS.Chart("stuffChart5", {
+                    theme: "light1",
+                    animationEnabled: true,
+                    title: {
+                        text: "入库总量分析柱状图"
+                    },
+                    data: [{
+                        type: "column",
+                        dataPoints: stuffArr2
+                    }]
+                });
+                var chart6 = new CanvasJS.Chart("stuffChart6", {
+                    theme: "light1",
+                    animationEnabled: true,
+                    title: {
+                        text: "销售总量分析柱状图"
+                    },
+                    data: [{
+                        type: "column",
+                        dataPoints: stuffArr3
+                    }]
+                });
+                chart.render();
+                chart2.render();
+                chart3.render();
+                chart4.render();
+                chart5.render();
+                chart6.render();
+            }
+
+        })
+
+        $.ajax({
+            dataType:"text",
+            url: "/stuff/stufflist",
+            type: "get",
+            success: function(e) {
+                let stuffs = JSON.parse(e)
+                let stuffPoints = []
+                let sum = 0
+                for (let i = 0; i < stuffs.length; i++) {
+                    stuffPoints[i] = {
+                        label: stuffs[i].name,
+                        y: Number.parseInt(stuffs[i].number)
+                    }
+                    sum += stuffPoints[i].y
+                }
+                for (let i = 0; i < stuffs.length; i++) {
+                    stuffPoints[i].z = (stuffPoints[i].y * 1.0 / sum * 100).toFixed(2)
+                }
+                var chart1 = new CanvasJS.Chart("stuffChart7", {
+                    theme: "light1",
+                    animationEnabled: true,
+                    title: {
+                        text: "家电库存分析柱状图"
+                    },
+                    data: [{
+                        type: "column",
+                        dataPoints: stuffPoints
+                    }]
+                });
+                chart1.render();
+                var chart2 = new CanvasJS.Chart("stuffChart8", {
+                    theme: "light2",
+                    exportEnabled: true,
+                    animationEnabled: true,
+                    title: {
+                        text: "家电库存分析饼状图"
+                    },
+                    data: [{
+                        type: "pie",
+                        startAngle: 25,
+                        toolTipContent: "<b>{label}</b>: {z}%",
+                        showInLegend: "true",
+                        legendText: "{label}",
+                        indexLabelFontSize: 16,
+                        indexLabel: "{label} - {z}%",
+                        dataPoints: stuffPoints
+                    }]
+                });
+                chart2.render();
+            }
+        })
+
+        function isIncloud(arr, str) {
+            let flag = -1
+            for (let i = 0; i < arr.length; i++) {
+                if (arr[i].name == str) {
+                    flag = i
+                    break
+                }
+            }
+            return flag
+        }
+    })
+</script>
 </body>
 </html>
