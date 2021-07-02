@@ -4,6 +4,402 @@
 
 </head>
 <body>
+<h3>家电库存总量分析图</h3>
+<div class="card">
+    <div id="chartContainer" style="height: 370px; width: 100%;"></div>
+</div>
 
+<h3>家电库存总量分析饼状图</h3>
+<div class="card">
+    <div style="display: flex">
+        <div id="supplierChart1" style="height: 300px; width: 60%;"></div>
+        <div>
+            <div id="supplierChart2" style="height: 150px;"></div>
+            <div id="supplierChart3" style="height: 150px;"></div>
+        </div>
+    </div>
+</div>
+<h3>家电库存总量分析柱状图</h3>
+<div class="card">
+    <div style="display: flex">
+        <div id="supplierChart4" style="height: 300px; width: 60%;"></div>
+        <div>
+            <div id="supplierChart5" style="height: 150px;"></div>
+            <div id="supplierChart6" style="height: 150px;"></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $().ready(function () {
+        $.ajax({
+            dataType: "text",
+            url: "/order/orderlistadmin",
+            type: "get",
+            success: function (e) {
+                let orders = JSON.parse(e)
+                var orderArr1 = []
+                var orderArr2 = []
+                var orderArr3 = []
+                for (let i = 0; i < orders.length; i++) {
+                    let order = orders[i];
+                    let orderName = order.name;
+                    let number = Number.parseInt(order.number)
+                    let index = isIncloud(orderArr1, orderName)
+                    let index2 = isIncloud(orderArr2, orderName)
+                    let index3 = isIncloud(orderArr3, orderName)
+                    if (index == -1) {
+                        let obj = {
+                            name: orderName,
+                            num: number
+                        }
+                        orderArr1.push(obj)
+                    } else {
+                        orderArr1[index].num += number
+                    }
+                    if (order.state == 1) {// 入库
+                        if (index2 == -1) {
+                            let obj = {
+                                name: orderName,
+                                num: number
+                            }
+                            orderArr2.push(obj)
+                        } else {
+                            orderArr2[index].num += number
+                        }
+                    } else if (order.state == 2) { // 销售
+                        if (index3 == -1) {
+                            let obj = {
+                                name: orderName,
+                                num: number
+                            }
+                            orderArr3.push(obj)
+                        } else {
+                            orderArr3[index].num += number
+                        }
+                    }
+                }
+                let sum = 0, sum2 = 0, sum3 = 0;
+                for (let i = 0; i < orderArr1.length; i++) {
+                    sum += orderArr1[i].num
+                }
+                for (let i = 0; i < orderArr2.length; i++) {
+                    sum2 += orderArr2[i].num
+                }
+                for (let i = 0; i < orderArr3.length; i++) {
+                    sum3 += orderArr3[i].num
+                }
+
+                for (let i = 0; i < orderArr1.length; i++) {
+                    orderArr1[i].label = orderArr1[i].name
+                    orderArr1[i].y = orderArr1[i].num
+                    orderArr1[i].z = (orderArr1[i].num / sum * 100).toFixed(2)
+                }
+                for (let i = 0; i < orderArr2.length; i++) {
+                    orderArr2[i].label = orderArr2[i].name
+                    orderArr2[i].y = orderArr2[i].num
+                    orderArr2[i].z = (orderArr2[i].num / sum2 * 100).toFixed(2)
+                }
+                for (let i = 0; i < orderArr3.length; i++) {
+                    orderArr3[i].label = orderArr3[i].name
+                    orderArr3[i].y = orderArr3[i].num
+                    orderArr3[i].z = (orderArr3[i].num / sum3 * 100).toFixed(2)
+                }
+                var chart = new CanvasJS.Chart("supplierChart1", {
+                    theme: "light2",
+                    exportEnabled: true,
+                    animationEnabled: true,
+                    title: {
+                        text: "家电库存总量分析图"
+                    },
+                    data: [{
+                        type: "pie",
+                        startAngle: 25,
+                        toolTipContent: "<b>{label}</b>: {z}%",
+                        showInLegend: "true",
+                        legendText: "{label}",
+                        indexLabelFontSize: 16,
+                        indexLabel: "{label} - {z}%",
+                        dataPoints: orderArr1
+                    }]
+                });
+                var chart2 = new CanvasJS.Chart("supplierChart2", {
+                    theme: "light2",
+                    exportEnabled: true,
+                    animationEnabled: true,
+                    title: {
+                        text: "入库量分析图"
+                    },
+                    data: [{
+                        type: "pie",
+                        startAngle: 25,
+                        toolTipContent: "<b>{name}</b>: {z}%",
+                        showInLegend: "true",
+                        legendText: "{name}",
+                        indexLabelFontSize: 16,
+                        indexLabel: "{name} - {z}%",
+                        dataPoints: orderArr2
+                    }]
+                });
+                var chart3 = new CanvasJS.Chart("supplierChart3", {
+                    theme: "light2",
+                    exportEnabled: true,
+                    animationEnabled: true,
+                    title: {
+                        text: "销售量分析图"
+                    },
+                    data: [{
+                        type: "pie",
+                        startAngle: 25,
+                        toolTipContent: "<b>{name}</b>: {z}%",
+                        showInLegend: "true",
+                        legendText: "{name}",
+                        indexLabelFontSize: 16,
+                        indexLabel: "{name} - {z}%",
+                        dataPoints: orderArr3
+                    }]
+                });
+                var chart4 = new CanvasJS.Chart("supplierChart4", {
+                    theme: "light1",
+                    animationEnabled: true,
+                    title: {
+                        text: "家电库存总量分析柱状图"
+                    },
+                    data: [{
+                        type: "column",
+                        dataPoints: orderArr1
+                    }]
+                });
+                var chart5 = new CanvasJS.Chart("supplierChart5", {
+                    theme: "light1",
+                    animationEnabled: true,
+                    title: {
+                        text: "入库总量分析柱状图"
+                    },
+                    data: [{
+                        type: "column",
+                        dataPoints: orderArr2
+                    }]
+                });
+                var chart6 = new CanvasJS.Chart("supplierChart6", {
+                    theme: "light1",
+                    animationEnabled: true,
+                    title: {
+                        text: "销售总量分析柱状图"
+                    },
+                    data: [{
+                        type: "column",
+                        dataPoints: orderArr3
+                    }]
+                });
+                chart.render();
+                chart2.render();
+                chart3.render();
+                chart4.render();
+                chart5.render();
+                chart6.render();
+            }
+
+        })
+
+        function isIncloud(arr, str) {
+            let flag = -1
+            for (let i = 0; i < arr.length; i++) {
+                if (arr[i].name == str) {
+                    flag = i
+                    break
+                }
+            }
+            return flag
+        }
+    })
+
+
+
+
+
+
+    var $table = $('#bootstrap-table');
+
+
+    $().ready(function () {
+        $.ajax({
+            type: "get",
+            url: "/order/orderlist",
+            success: function (e) {
+                let orders = JSON.parse(e)
+                let orderPoints = [], orderPoints1 = [], orderPoints2 = [], orderPoints3 = []
+                for (let i = 0; i < orders.length; i++) {
+                    orderPoints[i] = {x: new Date(orders[i].time), y: Number.parseInt(orders[i].money)}
+                    if (orders[i].state == 2)
+                        orderPoints1.push(orderPoints[i])
+                    else if (orders[i].state == 1)
+                        orderPoints2.push(orderPoints[i])
+                    else
+                        orderPoints3.push(orderPoints[i])
+                }
+                var chart = new CanvasJS.Chart("chartContainer", {
+                    animationEnabled: true,
+                    theme: "light2",
+                    title: {
+                        text: "订单分析图"
+                    },
+                    axisX: {
+                        valueFormatString: "DD MMM",
+                        crosshair: {
+                            enabled: true,
+                            snapToDataPoint: true
+                        }
+                    },
+                    axisY: {
+                        title: "金额",
+                        includeZero: true,
+                        crosshair: {
+                            enabled: true
+                        }
+                    },
+                    toolTip: {
+                        shared: true
+                    },
+                    legend: {
+                        cursor: "pointer",
+                        verticalAlign: "bottom",
+                        horizontalAlign: "left",
+                        dockInsidePlotArea: true,
+                        itemclick: toogleDataSeries
+                    },
+                    data: [{
+                        type: "line",
+                        showInLegend: true,
+                        name: "卖出",
+                        markerType: "square",
+                        xValueFormatString: "DD MMM, YYYY",
+                        dataPoints: orderPoints1
+                    },
+                        {
+                            type: "line",
+                            showInLegend: true,
+                            name: "购入",
+                            lineDashType: "square", //"dash",
+                            dataPoints: orderPoints2
+                        },
+                        {
+                            type: "line",
+                            showInLegend: true,
+                            name: "退货",
+                            lineDashType: "square", //"dash",
+                            dataPoints: orderPoints3
+                        }]
+                });
+                chart.render();
+
+                function toogleDataSeries(e) {
+                    if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                        e.dataSeries.visible = false;
+                    } else {
+                        e.dataSeries.visible = true;
+                    }
+                    chart.render();
+                }
+            }
+        })
+        window.operateEvents = {
+            'click .edit': function (e, value, row, index) {
+                location.href = "/order/findById?id=" + row.id;
+            },
+            'click .remove': function (e, value, row, index) {
+                //console.log(row);
+                $table.bootstrapTable('remove', {
+                    field: 'id',
+                    values: [row.id]
+                });
+                $.ajax({
+                    dataType: "text",
+                    url: "/order/deteteById?flag=2&&id=" + [row.id],
+                    type: "post",
+                    success: function (data) {
+                        if (data == "删除成功") {
+                            swal("成功！", data, "success");
+                        } else {
+                            swal("糟糕！", data, "error");
+                        }
+                        $table.bootstrapTable("refresh");
+                    }
+                });
+            }
+        };
+        /**删除方法*/
+        $("#remove").click(function () {
+            var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
+                return row.id;
+            });
+            if (ids != "") {
+                $.ajax({
+                    //data:{"ids":ids},
+                    dataType: "text",
+                    url: "/order/deteteByIds?flag=2&&ids=" + ids,
+                    type: "post",
+                    success: function (data) {
+                        if (data == "删除成功") {
+                            swal("成功！", data, "success");
+                        } else {
+                            swal("糟糕！", data, "error");
+                        }
+                        $table.bootstrapTable("refresh");
+                    }
+                });
+            }
+
+            $table.bootstrapTable('remove', {
+                field: 'id',
+                values: ids,
+            });
+        });
+        /**增加方法*/
+        $("#add").click(function () {
+            window.location.href = "/page/order_add";
+        });
+
+        $table.bootstrapTable({
+            undefinedText: 'N/A',//未定义文本
+            // url: dat ,
+            toolbar: ".toolbar",//工具按钮用哪个容器
+            clickToSelect: true,
+            showRefresh: true,
+            search: true,
+            //showToggle: true,
+            //showColumns: true,
+            pagination: true,
+            searchAlign: 'right',
+            searchPlaceholder: '模糊搜索',
+            pageSize: 8,
+            clickToSelect: false,
+            pageList: [8, 10, 25, 50, 100],
+            formatShowingRows: function (pageFrom, pageTo, totalRows) {
+                //do nothing here, we don't want to show the text "showing x of y from..."
+            },
+            formatRecordsPerPage: function (pageNumber) {
+                return pageNumber + "条/页";
+            },
+            icons: {
+                refresh: 'fa fa-refresh',
+                toggle: 'fa fa-th-list',
+                columns: 'fa fa-columns',
+                detailOpen: 'fa fa-plus-circle',
+                detailClose: 'fa fa-minus-circle'
+            }
+        });
+
+        //activate the tooltips after the data table is initialized
+        $('[rel="tooltip"]').tooltip();
+
+        $(window).resize(function () {
+            $table.bootstrapTable('resetView');
+        });
+
+
+    });
+
+</script>
 </body>
 </html>
