@@ -40,10 +40,7 @@
             </table>
         </div>
         <!--  end card  -->
-        <div class="card">
-            <div id="supplierChart" style="height: 300px; width: 100%;"></div>
-        </div>
-        <!--  end card  -->
+
     </div>
     <!-- end col-md-12 -->
 </div>
@@ -78,39 +75,6 @@
     }
 
     $().ready(function () {
-        $.ajax({
-            dataType: "text",
-            url: "/supplier/supplierlist",
-            type: "get",
-            success: function (e) {
-                let supplier = JSON.parse(e)
-                let l = supplier.length
-                for (let i = 0; i < supplier.length; i++) {
-                    supplier[i].label = supplier[i].name
-                    supplier[i].y = (100.0 / l).toFixed(2)
-                }
-                var chart = new CanvasJS.Chart("supplierChart", {
-                    theme: "light2",
-                    exportEnabled: true,
-                    animationEnabled: true,
-                    title: {
-                        text: "供应商分析图"
-                    },
-                    data: [{
-                        type: "pie",
-                        startAngle: 25,
-                        toolTipContent: "<b>{label}</b>: {y}%",
-                        showInLegend: "true",
-                        legendText: "{label}",
-                        indexLabelFontSize: 16,
-                        indexLabel: "{label} - {y}%",
-                        dataPoints: supplier
-                    }]
-                });
-                chart.render();
-            }
-
-        })
         window.operateEvents = {
             'click .edit': function (e, value, row, index) {
                 /* info = JSON.stringify(row);
