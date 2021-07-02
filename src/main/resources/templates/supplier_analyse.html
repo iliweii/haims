@@ -1,9 +1,212 @@
 <head th:replace="common :: common_head(~{},~{})" xmlns:th="http://www.thymeleaf.org">
 
-
-
 </head>
 <body>
+<h3>家电供货商分析饼状图</h3>
+<div class="card">
+    <div style="display: flex">
+        <div id="supplierChart1" style="height: 300px; width: 60%;"></div>
+        <div>
+            <div id="supplierChart2" style="height: 150px;"></div>
+            <div id="supplierChart3" style="height: 150px;"></div>
+        </div>
+    </div>
+</div>
+<h3>家电供货商分析柱状图</h3>
+<div class="card">
+    <div style="display: flex">
+        <div id="supplierChart4" style="height: 300px; width: 60%;"></div>
+        <div>
+            <div id="supplierChart5" style="height: 150px;"></div>
+            <div id="supplierChart6" style="height: 150px;"></div>
+        </div>
+    </div>
+</div>
+<!--  end card  -->
+<script>
 
+    $().ready(function () {
+        $.ajax({
+            dataType: "text",
+            url: "/order/orderlistadmin",
+            type: "get",
+            success: function (e) {
+                let orders = JSON.parse(e)
+                var supplierArr1 = []
+                var supplierArr2 = []
+                var supplierArr3 = []
+                for (let i = 0; i < orders.length; i++) {
+                    let order = orders[i];
+                    let supplierName = order.supplierName;
+                    let number = Number.parseInt(order.number)
+                    let index = isIncloud(supplierArr1, supplierName)
+                    let index2 = isIncloud(supplierArr2, supplierName)
+                    let index3 = isIncloud(supplierArr3, supplierName)
+                    if (index == -1) {
+                        let obj = {
+                            name: supplierName,
+                            num: number
+                        }
+                        supplierArr1.push(obj)
+                    } else {
+                        supplierArr1[index].num += number
+                    }
+                    if (order.state == 1) {// 入库
+                        if (index2 == -1) {
+                            let obj = {
+                                name: supplierName,
+                                num: number
+                            }
+                            supplierArr2.push(obj)
+                        } else {
+                            supplierArr2[index].num += number
+                        }
+                    } else if (order.state == 2) { // 销售
+                        if (index3 == -1) {
+                            let obj = {
+                                name: supplierName,
+                                num: number
+                            }
+                            supplierArr3.push(obj)
+                        } else {
+                            supplierArr3[index].num += number
+                        }
+                    }
+                }
+                let sum = 0, sum2 = 0, sum3 = 0;
+                for (let i = 0; i < supplierArr1.length; i++) {
+                    sum += supplierArr1[i].num
+                }
+                for (let i = 0; i < supplierArr2.length; i++) {
+                    sum2 += supplierArr2[i].num
+                }
+                for (let i = 0; i < supplierArr3.length; i++) {
+                    sum3 += supplierArr3[i].num
+                }
+
+                for (let i = 0; i < supplierArr1.length; i++) {
+                    supplierArr1[i].label = supplierArr1[i].name
+                    supplierArr1[i].y = supplierArr1[i].num
+                    supplierArr1[i].z = (supplierArr1[i].num / sum * 100).toFixed(2)
+                }
+                for (let i = 0; i < supplierArr2.length; i++) {
+                    supplierArr2[i].label = supplierArr2[i].name
+                    supplierArr2[i].y = supplierArr2[i].num
+                    supplierArr2[i].z = (supplierArr2[i].num / sum2 * 100).toFixed(2)
+                }
+                for (let i = 0; i < supplierArr3.length; i++) {
+                    supplierArr3[i].label = supplierArr3[i].name
+                    supplierArr3[i].y = supplierArr3[i].num
+                    supplierArr3[i].z = (supplierArr3[i].num / sum3 * 100).toFixed(2)
+                }
+                var chart = new CanvasJS.Chart("supplierChart1", {
+                    theme: "light2",
+                    exportEnabled: true,
+                    animationEnabled: true,
+                    title: {
+                        text: "供应商入库销售总量分析图"
+                    },
+                    data: [{
+                        type: "pie",
+                        startAngle: 25,
+                        toolTipContent: "<b>{label}</b>: {z}%",
+                        showInLegend: "true",
+                        legendText: "{label}",
+                        indexLabelFontSize: 16,
+                        indexLabel: "{label} - {z}%",
+                        dataPoints: supplierArr1
+                    }]
+                });
+                var chart2 = new CanvasJS.Chart("supplierChart2", {
+                    theme: "light2",
+                    exportEnabled: true,
+                    animationEnabled: true,
+                    title: {
+                        text: "入库量分析图"
+                    },
+                    data: [{
+                        type: "pie",
+                        startAngle: 25,
+                        toolTipContent: "<b>{name}</b>: {z}%",
+                        showInLegend: "true",
+                        legendText: "{name}",
+                        indexLabelFontSize: 16,
+                        indexLabel: "{name} - {z}%",
+                        dataPoints: supplierArr2
+                    }]
+                });
+                var chart3 = new CanvasJS.Chart("supplierChart3", {
+                    theme: "light2",
+                    exportEnabled: true,
+                    animationEnabled: true,
+                    title: {
+                        text: "销售量分析图"
+                    },
+                    data: [{
+                        type: "pie",
+                        startAngle: 25,
+                        toolTipContent: "<b>{name}</b>: {z}%",
+                        showInLegend: "true",
+                        legendText: "{name}",
+                        indexLabelFontSize: 16,
+                        indexLabel: "{name} - {z}%",
+                        dataPoints: supplierArr3
+                    }]
+                });
+                var chart4 = new CanvasJS.Chart("supplierChart4", {
+                    theme: "light1",
+                    animationEnabled: true,
+                    title: {
+                        text: "家电供应商入库销售总量分析柱状图"
+                    },
+                    data: [{
+                        type: "column",
+                        dataPoints: supplierArr1
+                    }]
+                });
+                var chart5 = new CanvasJS.Chart("supplierChart5", {
+                    theme: "light1",
+                    animationEnabled: true,
+                    title: {
+                        text: "入库总量分析柱状图"
+                    },
+                    data: [{
+                        type: "column",
+                        dataPoints: supplierArr2
+                    }]
+                });
+                var chart6 = new CanvasJS.Chart("supplierChart6", {
+                    theme: "light1",
+                    animationEnabled: true,
+                    title: {
+                        text: "销售总量分析柱状图"
+                    },
+                    data: [{
+                        type: "column",
+                        dataPoints: supplierArr3
+                    }]
+                });
+                chart.render();
+                chart2.render();
+                chart3.render();
+                chart4.render();
+                chart5.render();
+                chart6.render();
+            }
+
+        })
+
+        function isIncloud(arr, str) {
+            let flag = -1
+            for (let i = 0; i < arr.length; i++) {
+                if (arr[i].name == str) {
+                    flag = i
+                    break
+                }
+            }
+            return flag
+        }
+    })
+</script>
 </body>
 </html>
