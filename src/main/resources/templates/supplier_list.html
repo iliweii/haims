@@ -41,7 +41,12 @@
         </div>
         <!--  end card  -->
         <div class="card">
-            <div id="supplierChart" style="height: 300px; width: 100%;"></div>
+            <div style="display: flex">
+                <div id="supplierChart1" style="height: 300px; width: 50%;"></div>
+                <div id="supplierChart2" style="height: 300px; width: 25%;"></div>
+                <div id="supplierChart3" style="height: 300px; width: 25%;"></div>
+            </div>
+
         </div>
         <!--  end card  -->
     </div>
@@ -80,21 +85,80 @@
     $().ready(function () {
         $.ajax({
             dataType: "text",
-            url: "/supplier/supplierlist",
+            url: "/order/orderlistadmin",
             type: "get",
             success: function (e) {
-                let supplier = JSON.parse(e)
-                let l = supplier.length
-                for (let i = 0; i < supplier.length; i++) {
-                    supplier[i].label = supplier[i].name
-                    supplier[i].y = (100.0 / l).toFixed(2)
+                let orders = JSON.parse(e)
+                var supplierArr1 = []
+                var supplierArr2 = []
+                var supplierArr3 = []
+                for (let i = 0; i < orders.length; i++) {
+                    let order = orders[i];
+                    let supplierName = order.supplierName;
+                    let number = Number.parseInt(order.number)
+                    let index = isIncloud(supplierArr1, supplierName)
+                    let index2 = isIncloud(supplierArr2, supplierName)
+                    let index3 = isIncloud(supplierArr3, supplierName)
+                    if (index == -1) {
+                        let obj = {
+                            name: supplierName,
+                            num: number
+                        }
+                        supplierArr1.push(obj)
+                    } else {
+                        supplierArr1[index].num += number
+                    }
+                    if (order.state == 1) {// 入库
+                        if (index2 == -1) {
+                            let obj = {
+                                name: supplierName,
+                                num: number
+                            }
+                            supplierArr2.push(obj)
+                        } else {
+                            supplierArr2[index].num += number
+                        }
+                    } else if (order.state == 2) { // 销售
+                        if (index3 == -1) {
+                            let obj = {
+                                name: supplierName,
+                                num: number
+                            }
+                            supplierArr3.push(obj)
+                        } else {
+                            supplierArr3[index].num += number
+                        }
+                    }
                 }
-                var chart = new CanvasJS.Chart("supplierChart", {
+                let sum = 0, sum2 = 0, sum3 = 0;
+                for (let i = 0; i < supplierArr1.length; i++) {
+                    sum += supplierArr1[i].num
+                }
+                for (let i = 0; i < supplierArr2.length; i++) {
+                    sum2 += supplierArr2[i].num
+                }
+                for (let i = 0; i < supplierArr3.length; i++) {
+                    sum3 += supplierArr3[i].num
+                }
+
+                for (let i = 0; i < supplierArr1.length; i++) {
+                    supplierArr1[i].label = supplierArr1[i].name
+                    supplierArr1[i].y = (supplierArr1[i].num / sum * 100).toFixed(2)
+                }
+                for (let i = 0; i < supplierArr2.length; i++) {
+                    supplierArr2[i].label = supplierArr2[i].name
+                    supplierArr2[i].y = (supplierArr2[i].num / sum2 * 100).toFixed(2)
+                }
+                for (let i = 0; i < supplierArr3.length; i++) {
+                    supplierArr3[i].label = supplierArr3[i].name
+                    supplierArr3[i].y = (supplierArr3[i].num / sum3 * 100).toFixed(2)
+                }
+                var chart = new CanvasJS.Chart("supplierChart1", {
                     theme: "light2",
                     exportEnabled: true,
                     animationEnabled: true,
                     title: {
-                        text: "供应商分析图"
+                        text: "供应商入库销售总量分析图"
                     },
                     data: [{
                         type: "pie",
@@ -104,13 +168,61 @@
                         legendText: "{label}",
                         indexLabelFontSize: 16,
                         indexLabel: "{label} - {y}%",
-                        dataPoints: supplier
+                        dataPoints: supplierArr1
+                    }]
+                });
+                var chart2 = new CanvasJS.Chart("supplierChart2", {
+                    theme: "light2",
+                    exportEnabled: true,
+                    animationEnabled: true,
+                    title: {
+                        text: "入库量分析图"
+                    },
+                    data: [{
+                        type: "pie",
+                        startAngle: 25,
+                        toolTipContent: "<b>{name}</b>: {y}%",
+                        showInLegend: "true",
+                        legendText: "{name}",
+                        indexLabelFontSize: 16,
+                        indexLabel: "{name} - {y}%",
+                        dataPoints: supplierArr2
+                    }]
+                });
+                var chart3 = new CanvasJS.Chart("supplierChart3", {
+                    theme: "light2",
+                    exportEnabled: true,
+                    animationEnabled: true,
+                    title: {
+                        text: "销售量分析图"
+                    },
+                    data: [{
+                        type: "pie",
+                        startAngle: 25,
+                        toolTipContent: "<b>{name}</b>: {y}%",
+                        showInLegend: "true",
+                        legendText: "{name}",
+                        indexLabelFontSize: 16,
+                        indexLabel: "{name} - {y}%",
+                        dataPoints: supplierArr3
                     }]
                 });
                 chart.render();
+                chart2.render();
+                chart3.render();
             }
 
         })
+        function isIncloud(arr, str) {
+            let flag = -1
+            for (let i = 0; i < arr.length; i++) {
+                if (arr[i].name == str) {
+                    flag = i
+                    break
+                }
+            }
+            return flag
+        }
         window.operateEvents = {
             'click .edit': function (e, value, row, index) {
                 /* info = JSON.stringify(row);
