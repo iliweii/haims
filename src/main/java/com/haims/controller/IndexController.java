@@ -103,9 +103,25 @@ public class IndexController {
 	public String user_password() {
 		return "user_password";
 	}
+	@RequestMapping("/page/type_analyse")
+	public String type_analyse() {
+		return "type_analyse";
+	}
+	@RequestMapping("/page/stuff_analyse")
+	public String stuff_analyse() {
+		return "stuff_analyse";
+	}
+	@RequestMapping("/page/order_analyse")
+	public String order_analyse() {
+		return "order_analyse";
+	}
 	@RequestMapping("/page/user_update")
 	public String user_update() {
 		return "user_update";
+	}
+	@RequestMapping("/page/supplier_analyse")
+	public String supplier_analyse() {
+		return "supplier_analyse";
 	}
 
 
