@@ -2,9 +2,14 @@ package com.haims.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.haims.util.ExportExcelUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -195,6 +200,46 @@ public class OrderController {
 			return "删除成功";
 		}
 		return "删除失败";
+	}
+
+	@RequestMapping(value = "/excel", method = RequestMethod.GET)
+	public void ExportBankCkeckInfo(HttpServletResponse response, HttpServletRequest request){
+		OrderExample orderExample = new OrderExample();
+		// 设置查询条件，查询订单未被删除的
+		orderExample.createCriteria().andIsDeleteNotEqualTo(
+				Constant.ORDER_DELETE_2);
+		//得到所有要导出的数据
+		List<Order> orderlist = orderService.selectByExample(orderExample);
+		for (int i = 0; i < orderlist.size(); i++) {
+			if (orderlist.get(i).getState() == 1) {
+				orderlist.get(i).setUserId("入库");
+			} else if (orderlist.get(i).getState() == 2) {
+				orderlist.get(i).setUserId("销售");
+			} else if (orderlist.get(i).getState() == 3) {
+				orderlist.get(i).setUserId("退货");
+			}
+		}
+		//定义导出的excel名字
+		String excelName = "家电库存管理系统订单详情表";
+
+		//获取需要转出的excel表头的map字段
+		LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
+		fieldMap.put("id","订单编号");
+		fieldMap.put("name","订单名称");
+		fieldMap.put("money","交易价格");
+		fieldMap.put("number","交易数量");
+		fieldMap.put("userId","订单类型");
+		fieldMap.put("typeId","家电类型编号");
+		fieldMap.put("typeName","家电类型名称");
+		fieldMap.put("stuffId","家电编号");
+		fieldMap.put("stuffName","家电名称");
+		fieldMap.put("supplierId","家电供货商编号");
+		fieldMap.put("supplierName","家电供货商名称");
+		fieldMap.put("time","交易时间");
+		fieldMap.put("userName","订单操作员");
+
+		//导出用户相关信息
+		new ExportExcelUtil().export(excelName,orderlist,fieldMap,response);
 	}
 
 }

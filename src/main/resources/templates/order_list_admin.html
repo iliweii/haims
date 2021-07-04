@@ -20,6 +20,7 @@
                 <!--        Here you can write extra buttons/actions for the toolbar              -->
                 <button id="add" class="btn btn-secondary">增加订单</button>
                 <button id="remove" class="btn btn-secondary">删除订单</button>
+                <button id="download" class="btn btn-secondary">下载Excel</button>
             </div>
 
             <table id="bootstrap-table" class="table" data-url="/order/orderlistadmin">
@@ -226,6 +227,9 @@
         $("#add").click(function () {
             window.location.href = "/page/order_add";
         });
+        $("#download").click(function () {
+            window.location.href = "/order/excel";
+        });
 
         $table.bootstrapTable({
             undefinedText: 'N/A',//未定义文本
@@ -234,8 +238,8 @@
             clickToSelect: true,
             showRefresh: true,
             search: true,
-            //showToggle: true,
-            //showColumns: true,
+            // showToggle: true,
+            showColumns: true,
             pagination: true,
             searchAlign: 'right',
             searchPlaceholder: '模糊搜索',
