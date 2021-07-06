@@ -25,7 +25,7 @@
          <ul class="nav" th:if="${roleid eq '1'}">
              	<li>
                  <a data-toggle="collapse" href="#usersExamples">
-                     <i class="pe-7s-users"></i>
+                     <i class="icon-self icon-self-1"></i>
                      <p>人员管理
                          <b class="caret"></b>
                      </p>
@@ -39,7 +39,7 @@
              </li>
              <li>
                  <a data-toggle="collapse" href="#typesExamples">
-                     <i class="pe-7s-users"></i>
+                     <i class="icon-self icon-self-4"></i>
                      <p>家电类型管理
                          <b class="caret"></b>
                      </p>
@@ -54,7 +54,7 @@
              </li>
              <li>
                  <a data-toggle="collapse" href="#suppliersExamples">
-                     <i class="pe-7s-users"></i>
+                     <i class="icon-self icon-self-3"></i>
                      <p>家电供货商管理
                          <b class="caret"></b>
                      </p>
@@ -69,7 +69,7 @@
              </li>
              <li>
                  <a data-toggle="collapse" href="#ordersExamples">
-                     <i class="pe-7s-users"></i>
+                     <i class="icon-self icon-self-5"></i>
                      <p>家电订单管理
                          <b class="caret"></b>
                      </p>
@@ -84,7 +84,7 @@
              </li>
              <li>
                  <a data-toggle="collapse" href="#stuffsExamples">
-                     <i class="pe-7s-users"></i>
+                     <i class="icon-self icon-self-2"></i>
                      <p>家电库存信息管理
                          <b class="caret"></b>
                      </p>
@@ -103,7 +103,7 @@
          <ul class="nav" th:if="${roleid eq '2'}">
              <li>
                  <a data-toggle="collapse" href="#typesExamples">
-                     <i class="pe-7s-users"></i>
+                     <i class="icon-self icon-self-4"></i>
                      <p>家电类型管理
                          <b class="caret"></b>
                      </p>
@@ -117,7 +117,7 @@
              </li>
              <li>
                  <a data-toggle="collapse" href="#ordersExamples">
-                     <i class="pe-7s-users"></i>
+                     <i class="icon-self icon-self-5"></i>
                      <p>家电订单列表
                          <b class="caret"></b>
                      </p>
@@ -130,7 +130,7 @@
              </li>
              <li>
                  <a data-toggle="collapse" href="#stuffsExamples">
-                     <i class="pe-7s-users"></i>
+                     <i class="icon-self icon-self-2"></i>
                      <p>家电库存信息管理
                          <b class="caret"></b>
                      </p>
@@ -149,7 +149,7 @@
          <ul class="nav" th:if="${roleid eq '3'}">
              <li>
                  <a data-toggle="collapse" href="#ordersExamples">
-                     <i class="pe-7s-users"></i>
+                     <i class="icon-self icon-self-5"></i>
                      <p>家电订单管理
                          <b class="caret"></b>
                      </p>
@@ -186,9 +186,11 @@
                 <div class="collapse navbar-collapse">
 
                     <form class="navbar-form navbar-left navbar-search-form" role="search">
-                        <div class="input-group">
+                        <div class="input-group search-in">
                             <span class="input-group-addon"><i class="fa fa-search"></i></span>
-                            <input type="text" value="" class="form-control" placeholder="Search...">
+                            <input type="text" name="manger" id="search" autocomplete="off" class="form-control" placeholder="Search...">
+                            <div class="search-tip">
+                            </div>
                         </div>
                     </form>
 
@@ -214,7 +216,7 @@
                                     <a href="#" class="update_pwd" onclick="setMenu('/user/findByIdToPassword?id=' + $('input[name=userIdT]').val() )">
                                         <i class="pe-7s-help1"></i> 修改密码
                                     </a>
-                                </li> 
+                                </li>
                                 <li>
                                     <a href="/user/loginout" class="text-danger" >
                                         <i class="pe-7s-close-circle"></i>
@@ -264,14 +266,36 @@ function setMenu(menusrc){
 $("ul li a").bind("click",function(){
 	$("ul li").removeClass("active");
 	$(this).parent().addClass("active");
-
 });
 
+$().ready(function () {
+    $("#search").focus(function () {
+        $(".search-tip").slideDown()
+    })
+    $("#search").keyup(function () {
+        let text = $("#search").val()
+        $.ajax({
+            url: "/page/search",
+            type: "post",
+            data: {
+                text: text
+            },
+            success: function (e) {
+                let managers = JSON.parse(e);
+                $(".search-tip").empty()
+                for (let i = 0; i < managers.length; i++) {
+                    let m = managers[i]
+                    $(".search-tip").append(`<div class="search-item" onclick="setMenu('/page/${m.url}')">${m.name}</div>`)
+                }
+            }
+        })
+    })
+    $("#search").blur(function () {
+        $(".search-tip").slideUp()
+    })
+    $("body").on("click", ".search-item", function () {
+        $("#search").val("")
+    })
+})
 </script>
-
-<script>
-
-
-</script>
-
 </html>
