@@ -220,7 +220,7 @@ public class OrderController {
 			}
 		}
 		//定义导出的excel名字
-		String excelName = "家电库存管理系统订单详情表";
+		String excelName = "家电库存管理系统订单详情表" + new SimpleDateFormat("yyyyMMddhhmmss").format(new Date()).toString();
 
 		//获取需要转出的excel表头的map字段
 		LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
